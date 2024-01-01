@@ -8,7 +8,8 @@
     "Inc",
     "Middlewares",
     "Src",
-    "bsp"
+    "bsp",
+    "Application"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -80,7 +81,12 @@
           "Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc",
           "Drivers/CMSIS/Device/ST/STM32F4xx/Include",
           "Drivers/CMSIS/Include",
-          "Middlewares/ST/ARM/DSP/Inc"
+          "Middlewares/ST/ARM/DSP/Inc",
+          "Module/led",
+          "Bsp/PWM",
+          "Module",
+          "Bsp",
+          "Application"
         ],
         "libList": [],
         "sourceDirList": [],

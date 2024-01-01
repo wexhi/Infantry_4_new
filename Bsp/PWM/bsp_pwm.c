@@ -13,7 +13,7 @@ static PWM_Instance *pwm_instances[PWM_DEVICE_NUM] = {NULL}; // 一个指针数�
  * 
  * @note tim2~7,12~14:APB1  tim1,8~11:APB2
  */
-static uint32_t PWMSelectTclk(TIM_HandleTypeDef *htim )
+static uint32_t PWMSelectTclk(TIM_HandleTypeDef *htim)
 {
     uintptr_t tclk_temp  = ((uintptr_t)((htim)->Instance));
     if (
