@@ -48,6 +48,6 @@ static void TestInit(void)
         .module_callback=AAAAA,
     };
     USART_Instance * test_usart = USARTRegister(&usart_config);
-    USARTSend(test_usart,(uint8_t *)"hello world",11,USART_TRANSFER_DMA);
+    USARTSend(test_usart,(uint8_t *)"hello world\r\n",14,USART_TRANSFER_DMA);
 
 }
