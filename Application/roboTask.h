@@ -6,3 +6,27 @@
 #include "cmsis_os.h"
 
 #include "robot.h"
+#include "led.h"
+
+osThreadId daemonTaskHandle;
+
+void StartDAEMONTASK(void const *argument);
+
+/**
+ * @brief 初始化机器人RTOS任务，所有外加的RTOS任务都在这里初始化
+ *
+ */
+void OSTaskInit(void)
+{
+    osThreadDef(daemontask, StartDAEMONTASK, osPriorityNormal, 0, 128);
+    daemonTaskHandle = osThreadCreate(osThread(daemontask), NULL);
+}
+
+__attribute__((noreturn)) void StartDAEMONTASK(void const *argument)
+{
+    // 初始化所有外设
+    LEDInit();
+    for (;;) {
+        osDelay(10);
+    }
+}
