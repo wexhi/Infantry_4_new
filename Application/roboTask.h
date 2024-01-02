@@ -28,7 +28,7 @@ void OSTaskInit(void)
  */
 __attribute__((noreturn)) void StartDAEMONTASK(void const *argument)
 {
-    // 初始化所有外设
+    // 初始化LED外设
     LEDInit();
     for (;;) {
         LEDTask();
