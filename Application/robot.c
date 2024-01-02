@@ -1,9 +1,10 @@
-#include "robot.h"
-#include "roboTask.h"
+# include "robot.h"
+# include "roboTask.h"
+
 
 /**
  * @brief 机器人初始化
- *
+ * 
  */
 void RobotInit(void)
 {
@@ -14,7 +15,7 @@ void RobotInit(void)
     // 测试代码
 
     // BSP初始化
-
+    
     // 应用层初始化
 
     // rtos创建任务
@@ -25,8 +26,9 @@ void RobotInit(void)
 
 /**
  * @brief 机器人任务入口
- *
+ * 
  */
 void RobotTask()
 {
+
 }

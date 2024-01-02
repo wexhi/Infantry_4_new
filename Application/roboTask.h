@@ -22,11 +22,16 @@ void OSTaskInit(void)
     daemonTaskHandle = osThreadCreate(osThread(daemontask), NULL);
 }
 
+/**
+ * @brief 守护线程任务,100Hz,相当于看门狗
+ *
+ */
 __attribute__((noreturn)) void StartDAEMONTASK(void const *argument)
 {
     // 初始化所有外设
     LEDInit();
     for (;;) {
+        LEDTask();
         osDelay(10);
     }
 }

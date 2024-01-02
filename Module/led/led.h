@@ -16,6 +16,19 @@
 
 #define LED_MAX_NUM 3 // 最大led数量
 
+/* LED颜色 */
+typedef enum {
+    LED_COLOR_B = 0,
+    LED_COLOR_G = 1,
+    LED_COLOR_R = 2,
+} LED_COLOR;
+
+/* LED状态 */
+typedef enum {
+    LED_OFF = 0,
+    LED_ON  = 1,
+} LED_STATE;
+
 /* LED实例结构体 */
 typedef struct
 {
@@ -46,5 +59,28 @@ LED_Instance *LEDRegister(LED_Config_s *config);
  *
  */
 void LEDInit(void);
+
+/**
+ * @brief 设置LED状态
+ *
+ * @param color 0-2 0:B 1:G 2:R
+ * @param state 0:关闭 1:打开
+ */
+void LEDSetState(uint8_t color, uint8_t state);
+
+/**
+ * @brief 设置LED颜色,亮度
+ *
+ * @param color 0-2 0:B 1:G 2:R
+ * @param color_value 0-255
+ * @param brightness 0-255
+ */
+void LEDSet(uint8_t color, uint8_t color_value, uint8_t brightness);
+
+/**
+ * @brief LED显示函数
+ *
+ */
+void LEDTask(void);
 
 #endif // LED_H

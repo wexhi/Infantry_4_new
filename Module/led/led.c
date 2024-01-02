@@ -27,6 +27,7 @@ LED_Instance *LEDRegister(LED_Config_s *config)
 /**
  * @brief 所有LED初始化
  *
+ * @ note 初始化顺序BGR
  */
 void LEDInit(void)
 {
@@ -35,11 +36,11 @@ void LEDInit(void)
             .htim      = &htim5,
             .channel   = TIM_CHANNEL_1,
             .period    = 0.001,
-            .dutycycle = 0.5,
+            .dutycycle = 0,
             .callback  = NULL,
             .id        = NULL,
         },
-        .init_state = 0,
+        .init_state = LED_ON,
     };
     LEDRegister(&led_config);
 
@@ -50,17 +51,46 @@ void LEDInit(void)
     LEDRegister(&led_config);
 }
 
-void LEDShow(uint32_t aRGB)
+/**
+ * @brief 设置LED状态
+ *
+ * @param color 0-2 0:B 1:G 2:R
+ * @param state 0:关闭 1:打开
+ */
+void LEDSetState(uint8_t color, uint8_t state)
 {
-    static uint8_t alpha;
-    static uint16_t red, green, blue;
+    LED_Instance *_led = led_instances[color];
+    _led->state        = state;
+}
 
-    alpha = (aRGB & 0xFF000000) >> 24;
-    red   = ((aRGB & 0x00FF0000) >> 16) * alpha;
-    green = ((aRGB & 0x0000FF00) >> 8) * alpha;
-    blue  = ((aRGB & 0x000000FF) >> 0) * alpha;
+/**
+ * @brief 设置LED颜色,亮度
+ *
+ * @param color 0-2 0:B 1:G 2:R
+ * @param color_value 0-255
+ * @param brightness 0-255
+ */
+void LEDSet(uint8_t color, uint8_t color_value, uint8_t brightness)
+{
+    LED_Instance *_led = led_instances[color];
+    _led->color        = color_value;
+    _led->brightness   = brightness;
+}
 
-    __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_1, blue);
-    __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_2, green);
-    __HAL_TIM_SetCompare(&htim5, TIM_CHANNEL_3, red);
+/**
+ * @brief LED显示函数
+ *
+ */
+void LEDTask(void)
+{
+    LED_Instance *led;
+    for (uint8_t i = 0; i < idx; i++) 
+    {
+        led = led_instances[i];
+        if (led->state) {
+            PWMSetDutyRatio(led->pwm, led->color * led->brightness / 65025.0);
+        } else {
+            PWMSetDutyRatio(led->pwm, 0);
+        }
+    }
 }
