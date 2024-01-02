@@ -19,6 +19,8 @@
 #include "led.h"
 #include "key.h"
 
+#include "bsp_usart.h"
+
 osThreadId daemonTaskHandle;
 
 void StartDAEMONTASK(void const *argument);

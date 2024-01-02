@@ -42,15 +42,12 @@ static void AAAAA()
 
 static void TestInit(void)
 {
-    KEY_Config_s key_config = {
-        .gpio_config = {
-            .GPIOx     = GPIOA,
-            .GPIO_Pin  = GPIO_PIN_0,
-            .pin_state = GPIO_PIN_RESET,
-            .exti_mode = GPIO_MODE_INPUT,
-        },
-        .init_state = 0,
+    USART_Init_Config_s usart_config={
+        .recv_buff_size=USART_RXBUFF_LIMIT,
+        .usart_handle=&huart6,
+        .module_callback=AAAAA,
     };
-    key_config.gpio_config.gpio_model_callback = AAAAA;
-    KEYRegister(&key_config);
+    USART_Instance * test_usart = USARTRegister(&usart_config);
+    USARTSend(test_usart,(uint8_t *)"hello world",11,USART_TRANSFER_DMA);
+
 }
