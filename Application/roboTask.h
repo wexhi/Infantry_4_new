@@ -1,3 +1,13 @@
+/**
+ * @file roboTask.h
+ * @author Bi Kaixiang (wexhicy@gmail.com)
+ * @brief 机器人RTOS任务
+ * @version 0.1
+ * @date 2024-01-02
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 #pragma once
 
 #include "FreeRTOS.h"

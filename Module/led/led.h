@@ -21,13 +21,13 @@ typedef enum {
     LED_COLOR_B = 0,
     LED_COLOR_G = 1,
     LED_COLOR_R = 2,
-} LED_COLOR;
+} LED_COLOR_e;
 
 /* LED状态 */
 typedef enum {
     LED_OFF = 0,
     LED_ON  = 1,
-} LED_STATE;
+} LED_STATE_e;
 
 /* LED实例结构体 */
 typedef struct
