@@ -1,7 +1,7 @@
 /**
  * @file bsp_pwm.h
  * @author Bi Kaixiang (wexhicy@gmail.com)
- * @brief
+ * @brief  PWM
  * @version 0.1
  * @date 2024-01-02
  *
@@ -16,7 +16,7 @@
 #include "stm32f4xx_hal_rcc.h"
 #include "stm32f407xx.h"
 
-#define PWM_DEVICE_NUM 16 // 支持的最大PWM设备数量
+#define PWM_DEVICE_MAX_NUM 16 // 支持的最大PWM设备数量
 
 /* PWM实例结构体 */
 typedef struct pwm_instance {

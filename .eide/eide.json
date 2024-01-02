@@ -87,7 +87,8 @@
           "Bsp/PWM",
           "Module",
           "Bsp",
-          "Application"
+          "Application",
+          "Bsp/GPIO"
         ],
         "libList": [],
         "sourceDirList": [],

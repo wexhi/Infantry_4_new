@@ -17,6 +17,7 @@
 
 #include "robot.h"
 #include "led.h"
+#include "key.h"
 
 osThreadId daemonTaskHandle;
 

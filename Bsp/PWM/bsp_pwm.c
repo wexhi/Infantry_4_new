@@ -4,7 +4,7 @@
 
 // 配合中断以及初始化
 static uint8_t idx;
-static PWM_Instance *pwm_instances[PWM_DEVICE_NUM] = {NULL}; // 一个指针数组，用于存放PWM实例的指针
+static PWM_Instance *pwm_instances[PWM_DEVICE_MAX_NUM] = {NULL}; // 一个指针数组，用于存放PWM实例的指针
 
 /**
  * @brief 设置pwm对应定时器时钟源频率
@@ -54,7 +54,7 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
  */
 PWM_Instance *PWMRegister(PWM_Config_s *config)
 {
-    if (idx >= PWM_DEVICE_NUM) // 超过最大实例数,考虑增加或查看是否有内存泄漏
+    if (idx >= PWM_DEVICE_MAX_NUM) // 超过最大实例数,考虑增加或查看是否有内存泄漏
         return NULL;
     PWM_Instance *pwm = (PWM_Instance *)malloc(sizeof(PWM_Instance));
     memset(pwm, 0, sizeof(PWM_Instance)); // 清零,防止原先的地址有脏数据
