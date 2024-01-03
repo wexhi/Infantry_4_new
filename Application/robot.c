@@ -1,6 +1,8 @@
 #include "robot.h"
 #include "roboTask.h"
 
+#include "robot_cmd.h"
+
 static void TestInit(void);
 
 /**
@@ -18,7 +20,7 @@ void RobotInit(void)
     // BSP初始化
 
     // 应用层初始化
-
+    RobotCMDInit();
     // rtos创建任务
     OSTaskInit();
     // 初始化完成,开启中断
@@ -31,23 +33,17 @@ void RobotInit(void)
  */
 void RobotTask()
 {
+    // 应用层任务
+    RobotCMDTask();
 }
 
 /*  下面为测试代码,可忽略    */
 
-static void AAAAA()
-{
-    LEDSet(LED_COLOR_B,255,255);
-}
+// static void AAAAA()
+// {
+//     LEDSet(LED_COLOR_B, 255, 255);
+// }
 
 static void TestInit(void)
 {
-    USART_Init_Config_s usart_config={
-        .recv_buff_size=USART_RXBUFF_LIMIT,
-        .usart_handle=&huart6,
-        .module_callback=AAAAA,
-    };
-    USART_Instance * test_usart = USARTRegister(&usart_config);
-    USARTSend(test_usart,(uint8_t *)"hello world\r\n",14,USART_TRANSFER_DMA);
-
 }

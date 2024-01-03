@@ -21,8 +21,10 @@
 
 #include "bsp_usart.h"
 
+osThreadId robotTaskHandle;
 osThreadId daemonTaskHandle;
 
+void StartROBOTTASK(void const *argument);
 void StartDAEMONTASK(void const *argument);
 
 /**
@@ -31,8 +33,24 @@ void StartDAEMONTASK(void const *argument);
  */
 void OSTaskInit(void)
 {
+    osThreadDef(robottask, StartROBOTTASK, osPriorityNormal, 0, 1024);
+    robotTaskHandle = osThreadCreate(osThread(robottask), NULL);
+
     osThreadDef(daemontask, StartDAEMONTASK, osPriorityNormal, 0, 128);
     daemonTaskHandle = osThreadCreate(osThread(daemontask), NULL);
+}
+
+/**
+ * @brief 机器人任务入口
+ *
+ */
+__attribute__((noreturn)) void StartROBOTTASK(void const *argument)
+{
+    // 200Hz-500Hz,若有额外的控制任务如平衡步兵可能需要提升至1kHz
+    for (;;) {
+        RobotTask();
+        osDelay(5);
+    }
 }
 
 /**
