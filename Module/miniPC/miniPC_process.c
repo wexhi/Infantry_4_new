@@ -1,7 +1,7 @@
 #include "miniPC_process.h"
 #include "memory.h"
 
-static USART_Instance *vision_usart_instance; // 用于和视觉通信的串口实例
+static Vision_Instance *vision_instance; // 用于和视觉通信的串口实例
 
 static Vision_Recv_s recv_data;
 static Vision_Send_s send_data;
@@ -42,27 +42,46 @@ Vision_Send_s *VisionSendRegister(Vision_Send_Init_Config_s *send_config)
 }
 
 /**
- * @brief 调用此函数初始化和视觉的串口通信
+ * @brief 用于注册一个视觉通信模块实例,返回一个视觉接收数据结构体指针
  *
- * @param handle 用于和视觉通信的串口handle(C板上一般为USART1,丝印为USART2,4pin)
+ * @param init_config
+ * @return Vision_Recv_s*
  */
-Vision_Recv_s *VisionInit(UART_HandleTypeDef *_handle)
+Vision_Recv_s *VisionInit(Vision_Init_Config_s *init_config)
 {
-    USART_Init_Config_s conf;
-    conf.module_callback  = NULL;
-    conf.recv_buff_size   = VISION_RECV_SIZE;
-    conf.usart_handle     = _handle;
-    vision_usart_instance = USARTRegister(&conf);
+    vision_instance = (Vision_Instance *)malloc(sizeof(Vision_Instance));
+    memset(vision_instance, 0, sizeof(Vision_Instance));
 
-    return &recv_data;
+    vision_instance->recv_data = VisionRecvRegister(&init_config->recv_config);
+    vision_instance->send_data = VisionSendRegister(&init_config->send_config);
+    vision_instance->usart     = USARTRegister(&init_config->usart_config);
+
+    return vision_instance->recv_data;
 }
 
+/**
+ * @brief 发送数据处理函数
+ *
+ * @param send 待发送数据
+ * @param tx_buff 发送缓冲区
+ *
+ */
 static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
 {
     tx_buff[0] = send->header;
     tx_buff[1] = send->detect_color;
     tx_buff[2] = send->reset_tracker;
     tx_buff[3] = send->reserved;
+
+    /* 使用memcpy发送浮点型小数 */
+    memcpy(&tx_buff[4], &send->roll, 4);
+    memcpy(&tx_buff[8], &send->pitch, 4);
+    memcpy(&tx_buff[12], &send->yaw, 4);
+    memcpy(&tx_buff[16], &send->aim_x, 4);
+    memcpy(&tx_buff[20], &send->aim_y, 4);
+    memcpy(&tx_buff[24], &send->aim_z, 4);
+
+    tx_buff[25] = send->tail;
 }
 
 /**
@@ -75,5 +94,5 @@ void VisionSend()
 {
     static uint8_t send_buff[VISION_SEND_SIZE];
     SendProcess(&send_data, send_buff);
-    USARTSend(vision_usart_instance, send_buff, 4, USART_TRANSFER_BLOCKING);
+    USARTSend(vision_instance->usart, send_buff, VISION_SEND_SIZE, USART_TRANSFER_BLOCKING);
 }

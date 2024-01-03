@@ -19,7 +19,7 @@
 #define VISION_TAIL      0x5Au // 尾帧校验位
 
 #define VISION_RECV_SIZE 18u // 当前为固定值,18字节
-#define VISION_SEND_SIZE 36u
+#define VISION_SEND_SIZE 26u
 
 #pragma pack(1) // 1字节对齐
 
@@ -28,6 +28,12 @@ typedef enum {
     VISION_NO_TRACKING = 0u,
     VISION_TRACKING    = 1u,
 } VISION_TRACKING_e;
+
+/* 是否重置追踪 */
+typedef enum {
+    VISION_RESET_TRACKER_NO  = 0u,
+    VISION_RESET_TRACKER_YES = 1u,
+} VISION_RESET_TRACKER_e;
 
 /* 目标ID */
 typedef enum {
@@ -49,12 +55,6 @@ typedef enum {
     VISION_DETECT_COLOR_BLUE = 1u,
 } VISION_DETECT_COLOR_e;
 
-/* 是否重置追踪 */
-typedef enum {
-    VISION_RESET_TRACKER_NO  = 0u,
-    VISION_RESET_TRACKER_YES = 1u,
-} VISION_RESET_TRACKER_e;
-
 /* 视觉通信初始化接收结构体 */
 typedef struct
 {
@@ -75,6 +75,14 @@ typedef struct
     uint8_t reserved;      // 没用
     uint8_t tail;          // 尾帧校验位，不记得是多少了，和电控对一下
 } Vision_Send_Init_Config_s;
+
+/* 视觉实例初始化配置结构体 */
+typedef struct
+{
+    Vision_Recv_Init_Config_s recv_config; // 接收数据结构体
+    Vision_Send_Init_Config_s send_config; // 发送数据结构体
+    USART_Init_Config_s usart_config;      // 串口实例结构体
+} Vision_Init_Config_s;
 
 /* minipc -> stm32 (接收结构体) */
 typedef struct
@@ -133,11 +141,20 @@ typedef struct
 Vision_Recv_s *VisionRecvRegister(Vision_Recv_Init_Config_s *recv_config);
 
 /**
- * @brief 调用此函数初始化和视觉的串口通信
+ * @brief 用于注册一个视觉发送数据结构体,返回一个视觉发送数据结构体指针
  *
- * @param handle 用于和视觉通信的串口handle(C板上一般为USART1,丝印为USART2,4pin)
+ * @param send_config
+ * @return Vision_Send_s*
  */
-Vision_Recv_s *VisionInit(UART_HandleTypeDef *_handle);
+Vision_Send_s *VisionSendRegister(Vision_Send_Init_Config_s *send_config);
+
+/**
+ * @brief 用于注册一个视觉通信模块实例,返回一个视觉接收数据结构体指针
+ *
+ * @param init_config
+ * @return Vision_Recv_s*
+ */
+Vision_Recv_s *VisionInit(Vision_Init_Config_s *init_config);
 
 /**
  * @brief 发送函数
