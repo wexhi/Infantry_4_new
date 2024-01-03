@@ -68,6 +68,7 @@ Vision_Recv_s *VisionInit(Vision_Init_Config_s *init_config)
  */
 static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
 {
+    /* 发送帧头，目标颜色，是否重置等数据 */
     tx_buff[0] = send->header;
     tx_buff[1] = send->detect_color;
     tx_buff[2] = send->reset_tracker;
@@ -81,6 +82,7 @@ static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
     memcpy(&tx_buff[20], &send->aim_y, 4);
     memcpy(&tx_buff[24], &send->aim_z, 4);
 
+    /* 发送帧尾 */
     tx_buff[25] = send->tail;
 }
 
