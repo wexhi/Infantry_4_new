@@ -18,8 +18,10 @@
 #include "robot.h"
 #include "led.h"
 #include "key.h"
+#include "daemon.h"
 
 #include "bsp_usart.h"
+#include "bsp_dwt.h"
 
 osThreadId robotTaskHandle;
 osThreadId daemonTaskHandle;
@@ -59,10 +61,16 @@ __attribute__((noreturn)) void StartROBOTTASK(void const *argument)
  */
 __attribute__((noreturn)) void StartDAEMONTASK(void const *argument)
 {
+    static float daemon_dt;
+    static float daemon_start;
     // 初始化LED外设
     LEDInit();
     for (;;) {
+        // 100Hz
+        daemon_start = DWT_GetTimeline_ms();
+        DaemonTask();
         LEDTask();
+        daemon_dt = DWT_GetTimeline_ms() - daemon_start;
         osDelay(10);
     }
 }
