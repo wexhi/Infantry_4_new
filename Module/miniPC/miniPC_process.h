@@ -18,7 +18,7 @@
 #define VISION_HEADER    0xA5u // 头帧校验位
 #define VISION_TAIL      0x5Au // 尾帧校验位
 
-#define VISION_RECV_SIZE 18u // 当前为固定值,18字节
+#define VISION_RECV_SIZE 46u // 当前为固定值,46字节
 #define VISION_SEND_SIZE 26u
 
 #pragma pack(1) // 1字节对齐

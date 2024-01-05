@@ -3,6 +3,8 @@
 
 #include "robot_cmd.h"
 
+#include "bsp_init.h"
+
 static void TestInit(void);
 
 /**
@@ -18,7 +20,7 @@ void RobotInit(void)
     // 测试代码
     TestInit();
     // BSP初始化
-
+    BSPInit();
     // 应用层初始化
     RobotCMDInit();
     // rtos创建任务
