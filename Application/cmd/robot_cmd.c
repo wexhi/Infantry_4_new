@@ -4,9 +4,6 @@
 // module layer
 #include "miniPC_process.h"
 
-#include "led.h"
-static void VisionRecvCallback(void);
-
 static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时返回
 
 /**
@@ -32,7 +29,6 @@ void RobotCMDInit(void)
             .tail          = VISION_TAIL,
         },
         .usart_config = {
-            .module_callback = VisionRecvCallback,
             .recv_buff_size  = VISION_RECV_SIZE,
             .usart_handle    = &huart6,
         },
@@ -48,7 +44,3 @@ void RobotCMDTask(void)
 }
 
 /*********    下面为测试代码      **********/
-static void VisionRecvCallback(void)
-{
-    LEDSet(LED_COLOR_R, 255, 255);
-}

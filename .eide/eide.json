@@ -48,25 +48,20 @@
         },
         "options": "null"
       },
-      "uploader": "JLink",
+      "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "baseAddr": "",
-        "cpuInfo": {
-          "vendor": "ST",
-          "cpuName": "STM32F407IG"
-        },
-        "proType": 1,
-        "speed": 8000,
-        "otherCmds": ""
+        "target": "stm32f4x",
+        "interface": "stlink-v2",
+        "baseAddr": "0x08000000"
       },
       "uploadConfigMap": {
         "JLink": {
           "bin": "",
           "baseAddr": "",
           "cpuInfo": {
-            "vendor": "null",
-            "cpuName": "null"
+            "vendor": "ST",
+            "cpuName": "STM32F407IG"
           },
           "proType": 1,
           "speed": 8000,
