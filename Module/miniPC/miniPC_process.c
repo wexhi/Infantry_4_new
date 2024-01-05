@@ -5,9 +5,12 @@
 
 static Vision_Instance *vision_instance; // 用于和视觉通信的串口实例
 
-// static Vision_Recv_s recv_data;
-// static Vision_Send_s send_data;
-
+/**
+ * @brief 处理视觉传入的数据
+ *
+ * @param recv
+ * @param rx_buff
+ */
 static void RecvProcess(Vision_Recv_s *recv, uint8_t *rx_buff)
 {
     /* 读取目标颜色，是否重置等数据 */
