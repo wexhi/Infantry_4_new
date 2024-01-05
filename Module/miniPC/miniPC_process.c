@@ -10,23 +10,24 @@ static Vision_Instance *vision_instance; // 用于和视觉通信的串口实例
 
 static void RecvProcess(Vision_Recv_s *recv, uint8_t *rx_buff)
 {
-    // /* 读取帧头，目标颜色，是否重置等数据 */
-    // recv->header     = rx_buff[0];
-    // recv->tracking   = rx_buff[1];
-    // recv->id         = rx_buff[2];
-    // recv->armors_num = rx_buff[3];
-    // recv->reserved   = rx_buff[4];
+    /* 读取目标颜色，是否重置等数据 */
+    recv->tracking   = rx_buff[1];
+    recv->id         = rx_buff[2];
+    recv->armors_num = rx_buff[3];
+    recv->reserved   = rx_buff[4];
 
-    // /* 使用memcpy读取浮点型小数 */
-    // memcpy(&recv->roll, &rx_buff[5], 4);
-    // memcpy(&recv->pitch, &rx_buff[9], 4);
-    // memcpy(&recv->yaw, &rx_buff[13], 4);
-    // memcpy(&recv->aim_x, &rx_buff[17], 4);
-    // memcpy(&recv->aim_y, &rx_buff[21], 4);
-    // memcpy(&recv->aim_z, &rx_buff[25], 4);
-
-    // /* 读取帧尾 */
-    // recv->tail = rx_buff[29];
+    /* 使用memcpy读取浮点型小数 */
+    memcpy(&recv->x, &rx_buff[5], 4);
+    memcpy(&recv->y, &rx_buff[9], 4);
+    memcpy(&recv->z, &rx_buff[13], 4);
+    memcpy(&recv->yaw, &rx_buff[17], 4);
+    memcpy(&recv->vx, &rx_buff[21], 4);
+    memcpy(&recv->vy, &rx_buff[25], 4);
+    memcpy(&recv->vz, &rx_buff[29], 4);
+    memcpy(&recv->v_yaw, &rx_buff[33], 4);
+    memcpy(&recv->r1, &rx_buff[37], 4);
+    memcpy(&recv->r2, &rx_buff[41], 4);
+    memcpy(&recv->dz, &rx_buff[45], 4);
 }
 
 /**
@@ -37,12 +38,13 @@ static void DecodeVision(void)
 {
     if (vision_instance->usart->recv_buff[0] == vision_instance->recv_data->header) {
         // 读取视觉数据
+        RecvProcess(vision_instance->recv_data, vision_instance->usart->recv_buff);
 
         // 调试用，记得删掉
-        LEDSetState(LED_COLOR_R, LED_ON);
-        LEDSet(LED_COLOR_R, 255, 255);
+        LEDSetState(LED_COLOR_G, LED_ON);
+        LEDSet(LED_COLOR_G, 255, 255);
     } else {
-        LEDSetState(LED_COLOR_R, LED_OFF);
+        LEDSetState(LED_COLOR_G, LED_OFF);
     }
 }
 
@@ -56,7 +58,7 @@ Vision_Recv_s *VisionRecvRegister(Vision_Recv_Init_Config_s *recv_config)
 {
     Vision_Recv_s *recv_data = (Vision_Recv_s *)malloc(sizeof(Vision_Recv_s));
     memset(recv_data, 0, sizeof(Vision_Recv_s));
-    
+
     recv_data->header     = recv_config->header;
     recv_data->tracking   = recv_config->tracking;
     recv_data->id         = recv_config->id;
@@ -98,9 +100,9 @@ Vision_Recv_s *VisionInit(Vision_Init_Config_s *init_config)
     vision_instance = (Vision_Instance *)malloc(sizeof(Vision_Instance));
     memset(vision_instance, 0, sizeof(Vision_Instance));
 
-    vision_instance->usart                  = USARTRegister(&init_config->usart_config);
-    vision_instance->usart->module_callback = DecodeVision;
+    init_config->usart_config.module_callback = DecodeVision;
 
+    vision_instance->usart     = USARTRegister(&init_config->usart_config);
     vision_instance->recv_data = VisionRecvRegister(&init_config->recv_config);
     vision_instance->send_data = VisionSendRegister(&init_config->send_config);
     return vision_instance->recv_data;

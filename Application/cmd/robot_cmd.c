@@ -29,8 +29,8 @@ void RobotCMDInit(void)
             .tail          = VISION_TAIL,
         },
         .usart_config = {
-            .recv_buff_size  = VISION_RECV_SIZE,
-            .usart_handle    = &huart6,
+            .recv_buff_size = VISION_RECV_SIZE,
+            .usart_handle   = &huart6,
         },
 
     };
