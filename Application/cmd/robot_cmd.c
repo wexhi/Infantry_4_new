@@ -40,7 +40,7 @@ void RobotCMDInit(void)
 /* 机器人核心控制任务,200Hz频率运行(必须高于视觉发送频率) */
 void RobotCMDTask(void)
 {
-    VisionSend();
+    // VisionSend();
 }
 
 /*********    下面为测试代码      **********/

@@ -127,9 +127,9 @@ static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
     tx_buff[3] = send->reserved;
 
     /* 使用memcpy发送浮点型小数 */
-    memcpy(&tx_buff[4], &send->roll, 4);
-    memcpy(&tx_buff[8], &send->pitch, 4);
-    memcpy(&tx_buff[12], &send->yaw, 4);
+    memcpy(&tx_buff[4], &send->yaw, 4);
+    memcpy(&tx_buff[8], &send->roll, 4);
+    memcpy(&tx_buff[12], &send->pitch, 4);
     memcpy(&tx_buff[16], &send->aim_x, 4);
     memcpy(&tx_buff[20], &send->aim_y, 4);
     memcpy(&tx_buff[24], &send->aim_z, 4);
@@ -149,4 +149,18 @@ void VisionSend()
     static uint8_t send_buff[VISION_SEND_SIZE];
     SendProcess(vision_instance->send_data, send_buff);
     USARTSend(vision_instance->usart, send_buff, VISION_SEND_SIZE, USART_TRANSFER_BLOCKING);
+}
+
+/**
+ * @brief 设置发送给视觉的IMU数据
+ *
+ * @param yaw
+ * @param pitch
+ * @param roll
+ */
+void VisionSetAltitude(float yaw, float pitch, float roll)
+{
+    vision_instance->send_data->yaw   = yaw;
+    vision_instance->send_data->pitch = pitch;
+    vision_instance->send_data->roll  = roll;
 }

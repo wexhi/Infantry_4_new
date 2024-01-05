@@ -113,9 +113,9 @@ typedef struct
     uint8_t detect_color;  // 0-red 1-blue
     uint8_t reset_tracker; // 是否需要重置reset
     uint8_t reserved;      // 没用
+    float yaw;             // 陀螺仪yaw值
     float roll;            // 陀螺仪roll值
     float pitch;           // 陀螺仪pitch值
-    float yaw;             // 陀螺仪yaw值
     float aim_x;           // 在经过下位机弹道补偿后的目标的x
     float aim_y;           // 在经过下位机弹道补偿后的目标的y
     float aim_z;           // 在经过下位机弹道补偿后的目标的z
@@ -162,5 +162,14 @@ Vision_Recv_s *VisionInit(Vision_Init_Config_s *init_config);
  *
  */
 void VisionSend();
+
+/**
+ * @brief 设置发送给视觉的IMU数据
+ *
+ * @param yaw
+ * @param pitch
+ * @param roll
+ */
+void VisionSetAltitude(float yaw, float pitch, float roll);
 
 #endif // MINIPC_PROCESS_H
