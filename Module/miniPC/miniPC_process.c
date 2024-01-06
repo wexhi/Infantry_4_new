@@ -128,8 +128,8 @@ static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
 
     /* 使用memcpy发送浮点型小数 */
     memcpy(&tx_buff[4], &send->yaw, 4);
-    memcpy(&tx_buff[8], &send->roll, 4);
-    memcpy(&tx_buff[12], &send->pitch, 4);
+    memcpy(&tx_buff[8], &send->pitch, 4);
+    memcpy(&tx_buff[12], &send->roll, 4);
     memcpy(&tx_buff[16], &send->aim_x, 4);
     memcpy(&tx_buff[20], &send->aim_y, 4);
     memcpy(&tx_buff[24], &send->aim_z, 4);
