@@ -15,7 +15,7 @@
 #include "stdlib.h"
 #include "usart.h"
 
-#define USART_DEVICE_MAX_NUM 3 // 支持的最大USART设备数量
+#define USART_DEVICE_MAX_NUM 3    // 支持的最大USART设备数量
 #define USART_RXBUFF_LIMIT   255u // 如果协议需要更大的buff,请修改这里
 
 // 模块回调函数,用于解析协议
@@ -46,6 +46,16 @@ typedef struct
     UART_HandleTypeDef *usart_handle;      // 实例对应的usart_handle
     usart_module_callback module_callback; // 解析收到的数据的回调函数
 } USART_Init_Config_s;
+
+/**
+ * @brief 启动串口服务,会在每个实例注册之后自动启用接收,当前实现为DMA接收,后续可能添加IT和BLOCKING接收
+ *
+ * @todo 串口服务会在每个实例注册之后自动启用接收,当前实现为DMA接收,后续可能添加IT和BLOCKING接收
+ *       可能还要将此函数修改为extern,使得module可以控制串口的启停
+ *
+ * @param _instance instance owned by module,模块拥有的串口实例
+ */
+void USARTServiceInit(USART_Instance *_instance);
 
 /**
  * @brief 注册一个串口实例,返回一个串口实例指针

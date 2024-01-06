@@ -2,8 +2,10 @@
 #include "robot_cmd.h"
 
 // module layer
+#include "remote.h"
 #include "miniPC_process.h"
 
+static RC_ctrl_t *rc_data;              // 遥控器数据指针,初始化时返回
 static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时返回
 
 /**
@@ -12,6 +14,9 @@ static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时
  */
 void RobotCMDInit(void)
 {
+    rc_data = RemoteControlInit(&huart3); // 初始化遥控器,C板上使用USART3
+
+    // 初始化视觉接收,使用串口6
     Vision_Init_Config_s vision_init_config = {
         .recv_config = {
             .header     = VISION_HEADER,
