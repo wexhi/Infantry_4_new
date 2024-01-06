@@ -59,7 +59,7 @@ __attribute__((noreturn)) void StartINSTASK(void const *argument)
         ins_start = DWT_GetTimeline_ms();
         INS_Task();
         ins_dt = DWT_GetTimeline_ms() - ins_start;
-        VisionSend(); // 解算完成后发送视觉数据,但是当前的实现不太优雅,后续若添加硬件触发需要重新考虑结构的组织
+        // VisionSend(); // 解算完成后发送视觉数据,但是当前的实现不太优雅,后续若添加硬件触发需要重新考虑结构的组织
         osDelay(1);
     }
 }

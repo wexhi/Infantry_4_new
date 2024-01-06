@@ -117,13 +117,19 @@ static void f_PID_ErrorHandle(PID_Instance *pid)
  */
 void PIDInit(PID_Instance *pid, PID_Init_Config_s *config)
 {
-    // config的数据和pid的部分数据是连续且相同的的,所以可以直接用memcpy
-    // @todo: 不建议这样做,可扩展性差,不知道的开发者可能会误以为pid和config是同一个结构体
-    // 后续修改为逐个赋值
-    memset(pid, 0, sizeof(PID_Instance));
-    // utilize the quality of struct that its memeory is continuous
-    memcpy(pid, config, sizeof(PID_Init_Config_s));
-    // set rest of memory to 0
+    pid->Kp       = config->Kp;
+    pid->Ki       = config->Ki;
+    pid->Kd       = config->Kd;
+    pid->MaxOut   = config->MaxOut;
+    pid->DeadBand = config->DeadBand;
+
+    pid->Improve           = config->Improve;
+    pid->IntegralLimit     = config->IntegralLimit;
+    pid->CoefA             = config->CoefA;
+    pid->CoefB             = config->CoefB;
+    pid->Output_LPF_RC     = config->Output_LPF_RC;
+    pid->Derivative_LPF_RC = config->Derivative_LPF_RC;
+
     DWT_GetDeltaT(&pid->DWT_CNT);
 }
 
