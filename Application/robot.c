@@ -1,11 +1,10 @@
 #include "robot.h"
 #include "roboTask.h"
-
+#include "test_motor.h"
 #include "robot_cmd.h"
 
 #include "bsp_init.h"
 
-static void TestInit(void);
 
 /**
  * @brief 机器人初始化
@@ -22,6 +21,7 @@ void RobotInit(void)
     // BSP初始化
     BSPInit();
     // 应用层初始化
+    TestInit();
     RobotCMDInit();
     // rtos创建任务
     OSTaskInit();
@@ -46,6 +46,3 @@ void RobotTask()
 //     LEDSet(LED_COLOR_B, 255, 255);
 // }
 
-static void TestInit(void)
-{
-}
