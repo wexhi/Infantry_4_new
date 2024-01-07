@@ -52,7 +52,7 @@ void OSTaskInit(void)
 __attribute__((noreturn)) void StartINSTASK(void const *argument)
 {
     static float ins_start;
-    static float ins_dt;
+    static float ins_dt __attribute__((unused)); // for cancel warning
     INS_Init(); // 确保BMI088被正确初始化.
     for (;;) {
         // 1kHz
@@ -83,7 +83,7 @@ __attribute__((noreturn)) void StartROBOTTASK(void const *argument)
  */
 __attribute__((noreturn)) void StartDAEMONTASK(void const *argument)
 {
-    static float daemon_dt;
+    static float daemon_dt __attribute__((unused)); // for cancel warning
     static float daemon_start;
     // 初始化LED外设
     LEDInit();
