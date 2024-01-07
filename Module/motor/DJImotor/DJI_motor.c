@@ -316,6 +316,11 @@ static void MotorSenderGrouping(DJIMotor_Instance *motor, CAN_Init_Config_s *can
     }
 }
 
+/**
+ * @brief dji电机的CAN回调函数,用于解析电机的反馈报文,并对电机的反馈数据进行滤波
+ *
+ * @param can_instance  电机的CAN实例
+ */
 static void DecodeDJIMotor(CAN_Instance *can_instance)
 {
     /**
@@ -348,8 +353,14 @@ static void DecodeDJIMotor(CAN_Instance *can_instance)
     measure->total_angle = measure->total_round * 360 + measure->angle_single_round;
 }
 
+/**
+ * @brief  电机守护进程的回调函数,用于检测电机是否丢失,如果丢失则停止电机
+ *
+ * @param motor_ptr
+ */
 static void DJIMotorLostCallback(void *motor_ptr)
 {
     DJIMotor_Instance *motor                 = (DJIMotor_Instance *)motor_ptr;
+    motor->stop_flag                         = MOTOR_STOP;
     uint16_t can_bus __attribute__((unused)) = motor->motor_can_instance->can_handle == &hcan1 ? 1 : 2;
 }
