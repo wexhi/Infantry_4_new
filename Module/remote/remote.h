@@ -1,7 +1,7 @@
 /**
  * @file remote.h
  * @author Bi Kaixiang (wexhicy@gmail.com)
- * @brief
+ * @brief 遥控器模块
  * @version 0.1
  * @date 2024-01-06
  *

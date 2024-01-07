@@ -1,3 +1,13 @@
+/**
+ * @file bsp_can.h
+ * @author Bi Kaixiang (wexhicy@gmail.com)
+ * @brief  CAN的bsp层
+ * @version 0.1
+ * @date 2024-01-07
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 #ifndef BSP_CAN_H
 #define BSP_CAN_H
 
