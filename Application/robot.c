@@ -16,8 +16,6 @@ void RobotInit(void)
     // 请不要在初始化过程中使用中断和延时函数！
     // 若必须,则只允许使用DWT_Delay()
     __disable_irq();
-    // 测试代码
-    TestInit();
     // BSP初始化
     BSPInit();
     // 应用层初始化
@@ -37,6 +35,8 @@ void RobotTask()
 {
     // 应用层任务
     RobotCMDTask();
+    // 测试代码
+    TestTask();
 }
 
 /*  下面为测试代码,可忽略    */
