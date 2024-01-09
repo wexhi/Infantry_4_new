@@ -8,9 +8,9 @@
     "Inc",
     "Middlewares",
     "Src",
-    "bsp",
     "Application",
-    "Module"
+    "Module",
+    "Bsp"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",

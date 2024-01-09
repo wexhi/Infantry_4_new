@@ -84,8 +84,7 @@ void LEDSet(uint8_t color, uint8_t color_value, uint8_t brightness)
 void LEDTask(void)
 {
     LED_Instance *led;
-    for (uint8_t i = 0; i < idx; i++) 
-    {
+    for (uint8_t i = 0; i < idx; i++) {
         led = led_instances[i];
         if (led->state) {
             PWMSetDutyRatio(led->pwm, led->color * led->brightness / 65025.0);
@@ -93,4 +92,25 @@ void LEDTask(void)
             PWMSetDutyRatio(led->pwm, 0);
         }
     }
+}
+
+/**
+ * @brief 通过错误码闪烁LED,用于错误日志
+ *
+ * @attention 0或1不会闪烁，灯常亮
+ *
+ * @param duration 闪烁周期
+ * @param color 颜色
+ */
+void LEDErrLog(uint16_t duration, uint8_t color)
+{
+    // 先关闭所有LED，避免判断错误
+    LEDSetState(LED_COLOR_R, LED_OFF);
+    LEDSetState(LED_COLOR_G, LED_OFF);
+    LEDSetState(LED_COLOR_B, LED_OFF);
+    LEDSet(color, 255, 255);
+    if ((uint32_t)DWT_GetTimeline_s() % duration == 0 && duration <= 1)
+        LEDSetState(color, LED_OFF);
+    else
+        LEDSetState(color, LED_ON);
 }

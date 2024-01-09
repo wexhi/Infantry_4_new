@@ -169,12 +169,10 @@ static void RemoteControlRxCallback()
  */
 static void RCLostCallback(void *id)
 {
-
     memset(rc_ctrl, 0, sizeof(rc_ctrl)); // 清空遥控器数据
     USARTServiceInit(rc_usart_instance); // 尝试重新启动接收
 
-    /* 调试用代码，记得删掉 */
-    // LEDSet(LED_COLOR_R, 255, 255); // 红灯常亮 表示遥控器离线
+    LEDErrLog(0, LED_COLOR_R);  // 红灯常亮 表示遥控器离线
 }
 
 RC_ctrl_t *RemoteControlInit(UART_HandleTypeDef *rc_usart_handle)

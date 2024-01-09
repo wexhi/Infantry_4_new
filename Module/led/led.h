@@ -13,6 +13,7 @@
 
 #include "stdint.h"
 #include "bsp_pwm.h"
+#include "bsp_dwt.h"
 
 #define LED_MAX_NUM 3 // 最大led数量
 
@@ -82,5 +83,15 @@ void LEDSet(uint8_t color, uint8_t color_value, uint8_t brightness);
  *
  */
 void LEDTask(void);
+
+/**
+ * @brief 通过错误码闪烁LED,用于错误日志
+ *
+ * @attention 0或1不会闪烁，灯常亮
+ *
+ * @param duration 闪烁周期
+ * @param color 颜色
+ */
+void LEDErrLog(uint16_t duration, uint8_t color);
 
 #endif // LED_H
