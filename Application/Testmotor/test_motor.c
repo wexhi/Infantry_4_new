@@ -1,10 +1,17 @@
+#include "robot_def.h"
+
 #include "test_motor.h"
 #include "DJI_motor.h"
+#include "message_center.h"
 
 static DJIMotor_Instance *yaw_motor;
 static float init_angle;
 static uint8_t flag;
 static int16_t speed;
+
+static Subscriber_t *gimbal_sub; // cmd控制消息订阅者
+static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv; // 来自cmd的控制信息
+
 void TestInit(void)
 {
     Motor_Init_Config_s motor_config = {
@@ -40,6 +47,8 @@ void TestInit(void)
         .motor_type = GM6020,
     };
     yaw_motor = DJIMotorInit(&motor_config);
+
+    gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
 
 void TestTask(void)
@@ -48,6 +57,9 @@ void TestTask(void)
         init_angle = yaw_motor->measure.total_angle;
         flag       = 1;
     }
-    speed = yaw_motor->measure.speed_aps;
-    DJIMotorSetRef(yaw_motor, init_angle + 3600);
+    // 获取云台控制数据
+    // 后续增加未收到数据的处理
+    SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
+
+    DJIMotorSetRef(yaw_motor, init_angle + gimbal_cmd_recv.yaw);
 }
