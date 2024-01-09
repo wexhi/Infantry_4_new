@@ -7,7 +7,6 @@
 static DJIMotor_Instance *yaw_motor;
 static float init_angle;
 static uint8_t flag;
-static int16_t speed;
 
 static Subscriber_t *gimbal_sub; // cmd控制消息订阅者
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_recv; // 来自cmd的控制信息
