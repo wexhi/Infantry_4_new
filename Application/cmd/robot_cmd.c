@@ -7,9 +7,11 @@
 #include "miniPC_process.h"
 #include "message_center.h"
 
-static Publisher_t *gimbal_cmd_pub; // 云台控制消息发布者
+static Publisher_t *chassis_cmd_pub; // 底盘控制消息发布者
+static Publisher_t *gimbal_cmd_pub;  // 云台控制消息发布者
 
 static Gimbal_Ctrl_Cmd_s gimbal_cmd_send; // 传递给云台的控制信息
+static Chassis_Ctrl_Cmd_s chassis_cmd_send; // 传递给底盘的控制信息
 
 static RC_ctrl_t *rc_data;              // 遥控器数据指针,初始化时返回
 static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时返回
@@ -47,6 +49,9 @@ void RobotCMDInit(void)
     };
     vision_recv_data = VisionInit(&vision_init_config);
 
+    // 初始化底盘控制消息发布者
+    chassis_cmd_pub = PubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
+
     // 初始化云台控制消息发布者
     gimbal_cmd_pub = PubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
@@ -56,6 +61,10 @@ void RobotCMDTask(void)
 {
     // 测试
     gimbal_cmd_send.yaw = vision_recv_data->yaw;
+    chassis_cmd_send.vx = 666;
+    // 发布底盘控制消息
+    PubPushMessage(chassis_cmd_pub, (void *)&chassis_cmd_send);
+    // 发布云台控制消息
     PubPushMessage(gimbal_cmd_pub, (void *)&gimbal_cmd_send);
 }
 
