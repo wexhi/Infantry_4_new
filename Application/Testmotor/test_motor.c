@@ -47,7 +47,7 @@ void TestInit(void)
     };
     yaw_motor = DJIMotorInit(&motor_config);
 
-    gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
+    // gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
 
 void TestTask(void)

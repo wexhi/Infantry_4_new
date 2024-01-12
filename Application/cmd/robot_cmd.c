@@ -7,33 +7,40 @@
 #include "miniPC_process.h"
 #include "message_center.h"
 
-static Publisher_t *chassis_cmd_pub; // 底盘控制消息发布者
-static Publisher_t *gimbal_cmd_pub;  // 云台控制消息发布者
+static void RemoteControlSet(void);
 
-static Gimbal_Ctrl_Cmd_s gimbal_cmd_send; // 传递给云台的控制信息
+#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
+static RC_ctrl_t *rc_data;                  // 遥控器数据指针,初始化时返回
+static Publisher_t *chassis_cmd_pub;        // 底盘控制消息发布者
 static Chassis_Ctrl_Cmd_s chassis_cmd_send; // 传递给底盘的控制信息
-
-static RC_ctrl_t *rc_data;              // 遥控器数据指针,初始化时返回
-static Vision_Recv_s *vision_recv_data; // 视觉接收数据指针,初始化时返回
-
+#endif
+#if (defined(ONE_BOARD) || defined(GIMBAL_BOARD))
+static Vision_Recv_s *vision_recv_data;   // 视觉接收数据指针,初始化时返回
+static Publisher_t *gimbal_cmd_pub;       // 云台控制消息发布者
+static Gimbal_Ctrl_Cmd_s gimbal_cmd_send; // 传递给云台的控制信息
+#endif
 /**
  * @brief 机器人核心控制任务初始化,会被RobotInit()调用
  *
  */
 void RobotCMDInit(void)
 {
+#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
     rc_data = RemoteControlInit(&huart3); // 初始化遥控器,C板上使用USART3
-
+                                          // 初始化底盘控制消息发布者
+    chassis_cmd_pub = PubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
+#endif
+#if (defined(ONE_BOARD) || defined(GIMBAL_BOARD))
     // 初始化视觉接收,使用串口6
     Vision_Init_Config_s vision_init_config = {
         .recv_config = {
-            .header     = VISION_RECV_HEADER,
+            .header = VISION_RECV_HEADER,
         },
         .send_config = {
             .header        = VISION_SEND_HEADER,
             .detect_color  = VISION_DETECT_COLOR_RED,
             .reset_tracker = VISION_RESET_TRACKER_YES,
-            .is_shoot = VISION_SHOOTING,
+            .is_shoot      = VISION_SHOOTING,
         },
         .usart_config = {
             .recv_buff_size = VISION_RECV_SIZE,
@@ -42,24 +49,32 @@ void RobotCMDInit(void)
 
     };
     vision_recv_data = VisionInit(&vision_init_config);
-
-    // 初始化底盘控制消息发布者
-    chassis_cmd_pub = PubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
-
-    // 初始化云台控制消息发布者
-    gimbal_cmd_pub = PubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
+#endif
 }
 
 /* 机器人核心控制任务,200Hz频率运行(必须高于视觉发送频率) */
 void RobotCMDTask(void)
 {
-    // 测试
-    gimbal_cmd_send.yaw = vision_recv_data->yaw;
-    chassis_cmd_send.vx = 666;
+    RemoteControlSet(); // 遥控器控制量设置
+
+#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
     // 发布底盘控制消息
     PubPushMessage(chassis_cmd_pub, (void *)&chassis_cmd_send);
-    // 发布云台控制消息
-    PubPushMessage(gimbal_cmd_pub, (void *)&gimbal_cmd_send);
+#endif
 }
 
 /*********    下面为测试代码      **********/
+/**
+ * @brief 控制输入为遥控器(调试时)的模式和控制量设置
+ *
+ */
+static void RemoteControlSet(void)
+{
+    // 底盘参数,目前没有加入小陀螺(调试似乎暂时没有必要),系数需要调整
+    if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
+        chassis_cmd_send.chassis_mode = CHASSIS_NO_FOLLOW;
+        chassis_cmd_send.vx = 10.0f * (float)rc_data[TEMP].rc.rocker_l_; // _水平方向
+        chassis_cmd_send.vy = 10.0f * (float)rc_data[TEMP].rc.rocker_l1; // 1数值方向
+        chassis_cmd_send.wz = 10.0f * (float)rc_data[TEMP].rc.dial; // _水平方向
+    }
+}

@@ -52,7 +52,7 @@ void ChassisInit(void)
             .angle_feedback_source = MOTOR_FEED,
             .speed_feedback_source = MOTOR_FEED,
             .outer_loop_type       = SPEED_LOOP,
-            .close_loop_type       = CURRENT_LOOP,
+            .close_loop_type       = SPEED_LOOP | CURRENT_LOOP,
         },
         .motor_type = M3508,
     };
@@ -65,10 +65,10 @@ void ChassisInit(void)
     motor_rf                                   = DJIMotorInit(&chassis_motor_config);
 
     chassis_motor_config.can_init_config.tx_id = 3;
-    motor_lb                                   = DJIMotorInit(&chassis_motor_config);
+    motor_rb                                   = DJIMotorInit(&chassis_motor_config);
 
     chassis_motor_config.can_init_config.tx_id = 4;
-    motor_rb                                   = DJIMotorInit(&chassis_motor_config);
+    motor_lb                                   = DJIMotorInit(&chassis_motor_config);
 
     // 单板或接收器在底盘控制整车,则通过pubsub来传递消息
     chassis_sub = SubRegister("chassis_cmd", sizeof(Chassis_Ctrl_Cmd_s));
@@ -95,7 +95,7 @@ void ChassisTask(void)
     // 根据控制模式设定旋转速度
     switch (chassis_cmd_recv.chassis_mode) {
         case CHASSIS_NO_FOLLOW: // 底盘不旋转,但维持全向机动,一般用于调整云台姿态
-            chassis_cmd_recv.wz = 0;
+            // chassis_cmd_recv.wz = 0;
             break;
         case CHASSIS_FOLLOW_GIMBAL_YAW: // 跟随云台,不单独设置pid,以误差角度平方为速度输出
             chassis_cmd_recv.wz = -1.5f * chassis_cmd_recv.offset_angle * abs(chassis_cmd_recv.offset_angle);
@@ -113,7 +113,6 @@ void ChassisTask(void)
     sin_theta  = arm_sin_f32(chassis_cmd_recv.offset_angle * DEGREE_2_RAD);
     chassis_vx = chassis_cmd_recv.vx * cos_theta - chassis_cmd_recv.vy * sin_theta;
     chassis_vy = chassis_cmd_recv.vx * sin_theta + chassis_cmd_recv.vy * cos_theta;
-
     // 计算每个轮毂电机的输出,正运动学解算
     MecanumCalculate();
 
@@ -129,10 +128,10 @@ void ChassisTask(void)
  */
 static void MecanumCalculate(void)
 {
-    vt_lf = -chassis_vx * CHASSIS_WHEEL_OFFSET - chassis_vy * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz;
-    vt_rf = -chassis_vx * CHASSIS_WHEEL_OFFSET + chassis_vy * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz;
-    vt_lb = chassis_vx * CHASSIS_WHEEL_OFFSET - chassis_vy * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz;
-    vt_rb = chassis_vx * CHASSIS_WHEEL_OFFSET + chassis_vy * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz;
+    vt_lf = (-chassis_vx + chassis_vy) * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz;  // 1
+    vt_rf = (-chassis_vx - chassis_vy) * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz; // 2
+    vt_rb = (chassis_vx - chassis_vy) * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz; // 3
+    vt_lb = (chassis_vx + chassis_vy) * CHASSIS_WHEEL_OFFSET - chassis_cmd_recv.wz;  // 4
 }
 
 /**

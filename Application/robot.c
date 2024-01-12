@@ -6,7 +6,6 @@
 
 #include "bsp_init.h"
 
-
 /**
  * @brief 机器人初始化
  *
@@ -20,10 +19,10 @@ void RobotInit(void)
     // BSP初始化
     BSPInit();
     // 应用层初始化
-    TestInit();
 
-    ChassisInit();    // 底盘初始化
     RobotCMDInit();
+    ChassisInit(); // 底盘初始化
+    TestInit();
     // rtos创建任务
     OSTaskInit();
     // 初始化完成,开启中断
@@ -40,7 +39,7 @@ void RobotTask()
     RobotCMDTask();
     ChassisTask();
     // 测试代码
-    TestTask();
+    // TestTask();
 }
 
 /*  下面为测试代码,可忽略    */
@@ -49,4 +48,3 @@ void RobotTask()
 // {
 //     LEDSet(LED_COLOR_B, 255, 255);
 // }
-
