@@ -16,7 +16,7 @@ void TestInit(void)
     Motor_Init_Config_s motor_config = {
         .can_init_config = {
             .can_handle = &hcan1,
-            .tx_id      = 5,
+            .tx_id      = 6,
         },
         .controller_param_init_config = {
             .angle_PID = {

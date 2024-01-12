@@ -176,7 +176,7 @@ void DJIMotorControl(void)
     float pid_measure, pid_ref;             // 电机PID测量值和设定值
 
     // 遍历所有电机实例,进行串级PID的计算并设置发送报文的值
-    for (uint8_t i = 0; i < idx; ++i) {
+    for (size_t i = 0; i < idx; i++) {
         // 减小访存开销,先保存指针引用
         motor            = dji_motor_instances[i];
         motor_setting    = &motor->motor_settings;
