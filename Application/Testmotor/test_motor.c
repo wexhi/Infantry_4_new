@@ -41,8 +41,6 @@ void TestInit(void)
         // .motor_type = GM6020,
     };
     test_motor = DJIMotorInit(&motor_config);
-
-    // gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
 
 void TestTask(void)
