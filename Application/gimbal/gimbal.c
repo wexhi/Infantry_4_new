@@ -29,7 +29,7 @@ void GimbalInit(void)
                 .MaxOut        = 500,
             },
             .speed_PID = {
-                .Kp            = 15,
+                .Kp            = 20,
                 .Ki            = 1,
                 .Kd            = 0,
                 .IntegralLimit = 3000,
@@ -55,6 +55,7 @@ void GimbalInit(void)
 
 void GimbalTask(void)
 {
+#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
     SubGetMessage(gimbal_yaw_sub, &gimbal_yaw_cmd_recv);
 
     switch (gimbal_yaw_cmd_recv.gimbal_mode) {
@@ -70,4 +71,5 @@ void GimbalTask(void)
         default:
             break;
     }
+#endif
 }

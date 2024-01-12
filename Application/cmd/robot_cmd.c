@@ -68,7 +68,6 @@ void RobotCMDTask(void)
 #endif
 }
 
-/*********    下面为测试代码      **********/
 /**
  * @brief 控制输入为遥控器(调试时)的模式和控制量设置
  *
@@ -76,12 +75,17 @@ void RobotCMDTask(void)
 static void RemoteControlSet(void)
 {
     // 底盘参数,目前没有加入小陀螺(调试似乎暂时没有必要),系数需要调整
-    if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
-        chassis_cmd_send.chassis_mode = CHASSIS_NO_FOLLOW;
-    }
     if (switch_is_up(rc_data[TEMP].rc.switch_right)) {
-        gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
+       
     }
+    else if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
+        chassis_cmd_send.chassis_mode   = CHASSIS_NO_FOLLOW;
+        gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
+    } else if (switch_is_down(rc_data[TEMP].rc.switch_right)) {
+        chassis_cmd_send.chassis_mode = CHASSIS_ZERO_FORCE;
+        gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_ZERO_FORCE;
+    }
+
     chassis_cmd_send.vx = 10.0f * (float)rc_data[TEMP].rc.rocker_l_; // _水平方向
     chassis_cmd_send.vy = 10.0f * (float)rc_data[TEMP].rc.rocker_l1; // 1数值方向
     chassis_cmd_send.wz = 10.0f * (float)rc_data[TEMP].rc.dial;      // _水平方向
