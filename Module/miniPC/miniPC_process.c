@@ -13,24 +13,12 @@ static Vision_Instance *vision_instance; // 用于和视觉通信的串口实例
  */
 static void RecvProcess(Vision_Recv_s *recv, uint8_t *rx_buff)
 {
-    /* 读取目标颜色，是否重置等数据 */
-    recv->tracking   = rx_buff[1];
-    recv->id         = rx_buff[2];
-    recv->armors_num = rx_buff[3];
-    recv->reserved   = rx_buff[4];
+    /* 使用memcpy接收浮点型小数 */
+    memcpy(&recv->yaw, &rx_buff[1], 4);
+    memcpy(&recv->pitch, &rx_buff[5], 4);
 
-    /* 使用memcpy读取浮点型小数 */
-    memcpy(&recv->x, &rx_buff[5], 4);
-    memcpy(&recv->y, &rx_buff[9], 4);
-    memcpy(&recv->z, &rx_buff[13], 4);
-    memcpy(&recv->yaw, &rx_buff[17], 4);
-    memcpy(&recv->vx, &rx_buff[21], 4);
-    memcpy(&recv->vy, &rx_buff[25], 4);
-    memcpy(&recv->vz, &rx_buff[29], 4);
-    memcpy(&recv->v_yaw, &rx_buff[33], 4);
-    memcpy(&recv->r1, &rx_buff[37], 4);
-    memcpy(&recv->r2, &rx_buff[41], 4);
-    memcpy(&recv->dz, &rx_buff[45], 4);
+    /* 接收校验位 */
+    memcpy(&recv->checksum, &rx_buff[9], 2);
 }
 
 /**
@@ -63,11 +51,6 @@ Vision_Recv_s *VisionRecvRegister(Vision_Recv_Init_Config_s *recv_config)
     memset(recv_data, 0, sizeof(Vision_Recv_s));
 
     recv_data->header     = recv_config->header;
-    recv_data->tracking   = recv_config->tracking;
-    recv_data->id         = recv_config->id;
-    recv_data->armors_num = recv_config->armors_num;
-    recv_data->reserved   = recv_config->reserved;
-    recv_data->tail       = recv_config->tail;
 
     return recv_data;
 }
@@ -86,9 +69,7 @@ Vision_Send_s *VisionSendRegister(Vision_Send_Init_Config_s *send_config)
     send_data->header        = send_config->header;
     send_data->detect_color  = send_config->detect_color;
     send_data->reset_tracker = send_config->reset_tracker;
-    send_data->reserved      = send_config->reserved;
-    send_data->tail          = send_config->tail;
-
+    send_data->is_shoot      = send_config->is_shoot;
     return send_data;
 }
 
@@ -124,18 +105,15 @@ static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
     tx_buff[0] = send->header;
     tx_buff[1] = send->detect_color;
     tx_buff[2] = send->reset_tracker;
-    tx_buff[3] = send->reserved;
+    tx_buff[3] = send->is_shoot;
 
     /* 使用memcpy发送浮点型小数 */
     memcpy(&tx_buff[4], &send->yaw, 4);
     memcpy(&tx_buff[8], &send->pitch, 4);
     memcpy(&tx_buff[12], &send->roll, 4);
-    memcpy(&tx_buff[16], &send->aim_x, 4);
-    memcpy(&tx_buff[20], &send->aim_y, 4);
-    memcpy(&tx_buff[24], &send->aim_z, 4);
 
-    /* 发送帧尾 */
-    tx_buff[25] = send->tail;
+    /* 发送校验位 */
+    memcpy(&tx_buff[16], &send->checksum, 2);
 }
 
 /**

@@ -27,23 +27,17 @@ void RobotCMDInit(void)
     // 初始化视觉接收,使用串口6
     Vision_Init_Config_s vision_init_config = {
         .recv_config = {
-            .header     = VISION_HEADER,
-            .tracking   = VISION_TRACKING,
-            .id         = VISION_OUTPOST,
-            .armors_num = VISION_ARMORS_NUM_BALANCE,
-            .reserved   = 0x00,
-            .tail       = VISION_TAIL,
+            .header     = VISION_RECV_HEADER,
         },
         .send_config = {
-            .header        = VISION_HEADER,
+            .header        = VISION_SEND_HEADER,
             .detect_color  = VISION_DETECT_COLOR_RED,
-            .reset_tracker = VISION_RESET_TRACKER_NO,
-            .reserved      = 0xff,
-            .tail          = VISION_TAIL,
+            .reset_tracker = VISION_RESET_TRACKER_YES,
+            .is_shoot = VISION_SHOOTING,
         },
         .usart_config = {
             .recv_buff_size = VISION_RECV_SIZE,
-            .usart_handle   = &huart6,
+            .usart_handle   = &huart1,
         },
 
     };

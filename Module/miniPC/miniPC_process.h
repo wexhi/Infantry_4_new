@@ -15,19 +15,19 @@
 #include "stdint.h"
 #include "bsp_usart.h"
 
-#define VISION_HEADER    0xA5u // 头帧校验位
-#define VISION_TAIL      0x5Au // 尾帧校验位
+#define VISION_RECV_HEADER 0xA5u // 头帧校验位
+#define VISION_SEND_HEADER 0x5Au // 尾帧校验位
 
-#define VISION_RECV_SIZE 46u // 当前为固定值,46字节
-#define VISION_SEND_SIZE 26u
+#define VISION_RECV_SIZE   12u // 当前为固定值,12字节
+#define VISION_SEND_SIZE   18u
 
 #pragma pack(1) // 1字节对齐
 
 /* 是否追踪 */
 typedef enum {
-    VISION_NO_TRACKING = 0u,
-    VISION_TRACKING    = 1u,
-} VISION_TRACKING_e;
+    VISION_NO_SHOOTING = 0u,
+    VISION_SHOOTING    = 1u,
+} VISION_SHOOTING_e;
 
 /* 是否重置追踪 */
 typedef enum {
@@ -58,12 +58,7 @@ typedef enum {
 /* 视觉通信初始化接收结构体 */
 typedef struct
 {
-    uint8_t header;     // 头帧校验位
-    uint8_t tracking;   // 是否在追踪
-    uint8_t id;         // 0-outpost 6-guard 7-base  目标序号
-    uint8_t armors_num; // 一共有多少块装甲板 2-balance平衡 3-outpost前哨战 4-normal正常
-    uint8_t reserved;   // 没用
-    uint8_t tail;       // 尾帧校验位，不记得是多少了，和电控对一下
+    uint8_t header; // 头帧校验位
 } Vision_Recv_Init_Config_s;
 
 /* 视觉通信初始化发送结构体 */
@@ -71,9 +66,8 @@ typedef struct
 {
     uint8_t header;        // 头帧校验位
     uint8_t detect_color;  // 0-red 1-blue
-    uint8_t reset_tracker; // 是否需要重置reset
-    uint8_t reserved;      // 没用
-    uint8_t tail;          // 尾帧校验位，不记得是多少了，和电控对一下
+    uint8_t reset_tracker; // 是否重置追踪器 发0 bool is_shoot; // 是否开启自瞄模式 开发 1
+    uint8_t is_shoot;      // 是否开启自瞄模式 开发 1
 } Vision_Send_Init_Config_s;
 
 /* 视觉实例初始化配置结构体 */
@@ -87,41 +81,24 @@ typedef struct
 /* minipc -> stm32 (接收结构体) */
 typedef struct
 {
-    uint8_t header;     // 头帧校验位
-    uint8_t tracking;   // 是否在追踪
-    uint8_t id;         // 0-outpost 6-guard 7-base  目标序号
-    uint8_t armors_num; // 一共有多少块装甲板 2-balance平衡 3-outpost前哨战 4-normal正常
-    uint8_t reserved;   // 没用
-    float x;            // 目标中心x
-    float y;            // 目标中心y
-    float z;            // 目标中心z
-    float yaw;          // 目标转角yaw
-    float vx;           // 目标中心x方向速度
-    float vy;           // 目标中心y方向速度
-    float vz;           // 目标中心z方向速度
-    float v_yaw;        // 目标yaw转速
-    float r1;           // 目标半径1
-    float r2;           // 目标半径2
-    float dz;           // 两侧装甲板高度差
-    uint8_t tail;       // 尾帧校验位，不记得是多少了，和电控对一下
+    uint8_t header;
+    float yaw;
+    float pitch;
+    uint16_t checksum;
 } Vision_Recv_s;
 
 /* stm32 -> minipc (发送结构体) */
 typedef struct
 {
-    uint8_t header;        // 头帧校验位
-    uint8_t detect_color;  // 0-red 1-blue
-    uint8_t reset_tracker; // 是否需要重置reset
-    uint8_t reserved;      // 没用
-    float yaw;             // 陀螺仪yaw值
-    float roll;            // 陀螺仪roll值
-    float pitch;           // 陀螺仪pitch值
-    float aim_x;           // 在经过下位机弹道补偿后的目标的x
-    float aim_y;           // 在经过下位机弹道补偿后的目标的y
-    float aim_z;           // 在经过下位机弹道补偿后的目标的z
-    uint8_t tail;          // 尾帧校验位，不记得是多少了，和电控对一下
+    uint8_t header;
+    uint8_t detect_color;  // 0-red 1-blue 发1
+    uint8_t reset_tracker; // 是否重置追踪器 发0
+    uint8_t is_shoot;      // 是否开启自瞄模式 开发 1
+    float roll;            // rad
+    float yaw;             // rad
+    float pitch;           //
+    uint16_t checksum;     // crc16校验位 https://blog.csdn.net/ydyuse/article/details/105395368
 } Vision_Send_s;
-
 /* 视觉通信模块实例 */
 typedef struct
 {
