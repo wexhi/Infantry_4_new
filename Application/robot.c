@@ -3,6 +3,7 @@
 #include "test_motor.h"
 #include "robot_cmd.h"
 #include "chassis.h"
+#include "gimbal.h"
 
 #include "bsp_init.h"
 
@@ -22,6 +23,7 @@ void RobotInit(void)
 
     RobotCMDInit();
     ChassisInit(); // 底盘初始化
+    GimbalInit();  // 云台初始化
     TestInit();
     // rtos创建任务
     OSTaskInit();
@@ -38,6 +40,7 @@ void RobotTask()
     // 应用层任务
     RobotCMDTask();
     ChassisTask();
+    GimbalTask();
     // 测试代码
     // TestTask();
 }

@@ -4,7 +4,7 @@
 #include "DJI_motor.h"
 #include "message_center.h"
 
-static DJIMotor_Instance *yaw_motor;
+static DJIMotor_Instance *test_motor;
 static float init_angle;
 static uint8_t flag;
 
@@ -16,7 +16,7 @@ void TestInit(void)
     Motor_Init_Config_s motor_config = {
         .can_init_config = {
             .can_handle = &hcan1,
-            .tx_id      = 6,
+            .tx_id      = 7,
         },
         .controller_param_init_config = {
             .angle_PID = {
@@ -45,7 +45,7 @@ void TestInit(void)
         },
         .motor_type = GM6020,
     };
-    yaw_motor = DJIMotorInit(&motor_config);
+    test_motor = DJIMotorInit(&motor_config);
 
     // gimbal_sub = SubRegister("gimbal_cmd", sizeof(Gimbal_Ctrl_Cmd_s));
 }
@@ -53,12 +53,12 @@ void TestInit(void)
 void TestTask(void)
 {
     if (!flag) {
-        init_angle = yaw_motor->measure.total_angle;
+        init_angle = test_motor->measure.total_angle;
         flag       = 1;
     }
     // 获取云台控制数据
     // 后续增加未收到数据的处理
     SubGetMessage(gimbal_sub, &gimbal_cmd_recv);
 
-    DJIMotorSetRef(yaw_motor, init_angle + gimbal_cmd_recv.yaw);
+    DJIMotorSetRef(test_motor, init_angle + gimbal_cmd_recv.yaw);
 }
