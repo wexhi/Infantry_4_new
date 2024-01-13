@@ -22,7 +22,7 @@
 #define VISION_RECV_SIZE   12u // 当前为固定值,12字节
 #define VISION_SEND_SIZE   19u
 
-#pragma pack(1) // 1字节对齐
+// #pragma pack(1) // 1字节对齐
 
 /* 是否追踪 */
 typedef enum {
@@ -110,7 +110,7 @@ typedef struct
     USART_Instance *usart;    // 串口实例指针
 } Vision_Instance;
 
-#pragma pack() // 取消1字节对齐
+// #pragma pack() // 取消1字节对齐
 
 /**
  * @brief 用于注册一个视觉接收数据结构体,返回一个视觉接收数据结构体指针

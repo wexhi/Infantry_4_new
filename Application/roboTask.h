@@ -16,6 +16,7 @@
 #include "cmsis_os.h"
 
 #include "robot.h"
+#include "robot_def.h"
 #include "led.h"
 #include "key.h"
 #include "daemon.h"

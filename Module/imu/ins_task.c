@@ -19,6 +19,7 @@
 #include "user_lib.h"
 #include "general_def.h"
 #include "miniPC_process.h"
+#include "robot_def.h"
 
 static INS_t INS;
 static IMU_Param_t IMU_Param;
@@ -164,8 +165,9 @@ void INS_Task(void)
         INS.Pitch         = QEKF_INS.Pitch;
         INS.Roll          = QEKF_INS.Roll;
         INS.YawTotalAngle = QEKF_INS.YawTotalAngle;
-
+#if (defined(ONE_BOARD) || defined(GIMBAL_BOARD))
         VisionSetAltitude(INS.Yaw, INS.Pitch, INS.Roll);
+#endif
     }
 
     // temperature control

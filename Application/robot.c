@@ -24,7 +24,6 @@ void RobotInit(void)
     RobotCMDInit();
     ChassisInit(); // 底盘初始化
     GimbalInit(); // 云台初始化
-    TestInit();
     // rtos创建任务
     OSTaskInit();
     // 初始化完成,开启中断
