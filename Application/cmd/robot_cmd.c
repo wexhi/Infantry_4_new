@@ -45,6 +45,7 @@ void RobotCMDInit(void)
             .detect_color  = VISION_DETECT_COLOR_RED,
             .reset_tracker = VISION_RESET_TRACKER_YES,
             .is_shoot      = VISION_SHOOTING,
+            .tail          = VISION_SEND_TAIL,
         },
         .usart_config = {
             .recv_buff_size = VISION_RECV_SIZE,
@@ -74,15 +75,15 @@ void RobotCMDTask(void)
  */
 static void RemoteControlSet(void)
 {
+#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
     // 底盘参数,目前没有加入小陀螺(调试似乎暂时没有必要),系数需要调整
     if (switch_is_up(rc_data[TEMP].rc.switch_right)) {
-       
-    }
-    else if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
+
+    } else if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
         chassis_cmd_send.chassis_mode   = CHASSIS_NO_FOLLOW;
         gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
     } else if (switch_is_down(rc_data[TEMP].rc.switch_right)) {
-        chassis_cmd_send.chassis_mode = CHASSIS_ZERO_FORCE;
+        chassis_cmd_send.chassis_mode   = CHASSIS_ZERO_FORCE;
         gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_ZERO_FORCE;
     }
 
@@ -93,4 +94,5 @@ static void RemoteControlSet(void)
     // 云台参数
     // 按照摇杆的输出大小进行角度增量,增益系数需调整
     gimbal_yaw_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_r_;
+#endif
 }

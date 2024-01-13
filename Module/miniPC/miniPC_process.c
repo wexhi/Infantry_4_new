@@ -70,6 +70,7 @@ Vision_Send_s *VisionSendRegister(Vision_Send_Init_Config_s *send_config)
     send_data->detect_color  = send_config->detect_color;
     send_data->reset_tracker = send_config->reset_tracker;
     send_data->is_shoot      = send_config->is_shoot;
+    send_data->tail          = send_config->tail;
     return send_data;
 }
 

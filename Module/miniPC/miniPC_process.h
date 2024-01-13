@@ -15,11 +15,12 @@
 #include "stdint.h"
 #include "bsp_usart.h"
 
-#define VISION_RECV_HEADER 0xA5u // 头帧校验位
-#define VISION_SEND_HEADER 0x5Au // 尾帧校验位
+#define VISION_RECV_HEADER 0xA5u // 视觉接收数据帧头
+#define VISION_SEND_HEADER 0x5Au // 视觉发送数据帧头
+#define VISION_SEND_TAIL   0xAAu // 视觉发送数据帧尾
 
 #define VISION_RECV_SIZE   12u // 当前为固定值,12字节
-#define VISION_SEND_SIZE   18u
+#define VISION_SEND_SIZE   19u
 
 #pragma pack(1) // 1字节对齐
 
@@ -68,6 +69,7 @@ typedef struct
     uint8_t detect_color;  // 0-red 1-blue
     uint8_t reset_tracker; // 是否重置追踪器 发0 bool is_shoot; // 是否开启自瞄模式 开发 1
     uint8_t is_shoot;      // 是否开启自瞄模式 开发 1
+    uint8_t tail;          // 尾帧校验位
 } Vision_Send_Init_Config_s;
 
 /* 视觉实例初始化配置结构体 */
@@ -98,6 +100,7 @@ typedef struct
     float yaw;             // rad
     float pitch;           //
     uint16_t checksum;     // crc16校验位 https://blog.csdn.net/ydyuse/article/details/105395368
+    uint8_t tail;          // 尾帧校验位
 } Vision_Send_s;
 /* 视觉通信模块实例 */
 typedef struct
