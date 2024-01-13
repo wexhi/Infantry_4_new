@@ -115,6 +115,7 @@ static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
 
     /* 发送校验位 */
     memcpy(&tx_buff[16], &send->checksum, 2);
+    memcpy(&tx_buff[18], &send->tail, 1);
 }
 
 /**
