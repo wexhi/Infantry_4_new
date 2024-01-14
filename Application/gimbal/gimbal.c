@@ -3,19 +3,20 @@
 #include "robot_def.h"
 #include "message_center.h"
 
-#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
+#if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
 static DJIMotor_Instance *yaw_motor;
 static Subscriber_t *gimbal_yaw_sub;          // cmd控制消息订阅者
 static Gimbal_Ctrl_Cmd_s gimbal_yaw_cmd_recv; // 来自cmd的控制信息
 #endif
-#if (defined(GIMBAL_BOARD) || defined(ONE_BOARD))
+
+#if defined(GIMBAL_BOARD) || defined(ONE_BOARD)
 static DJIMotor_Instance *pitch_motor;
 #endif
 
 
 void GimbalInit(void)
 {
-#if (defined(GIMBAL_BOARD) || defined(ONE_BOARD))
+#if defined(GIMBAL_BOARD) || defined(ONE_BOARD)
     Motor_Init_Config_s pitch_config = {
         .can_init_config = {
             .can_handle = &hcan1,
@@ -52,7 +53,7 @@ void GimbalInit(void)
     pitch_motor = DJIMotorInit(&pitch_config);
 #endif
 
-#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
+#if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
     Motor_Init_Config_s yaw_config = {
         .can_init_config = {
             .can_handle = &hcan1,
@@ -94,7 +95,7 @@ void GimbalInit(void)
 
 void GimbalTask(void)
 {
-#if (defined(ONE_BOARD) || defined(CHASSIS_BOARD))
+#if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
     SubGetMessage(gimbal_yaw_sub, &gimbal_yaw_cmd_recv);
 
     switch (gimbal_yaw_cmd_recv.gimbal_mode) {

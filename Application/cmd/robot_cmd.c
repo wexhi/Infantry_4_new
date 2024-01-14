@@ -18,8 +18,6 @@ static Gimbal_Ctrl_Cmd_s gimbal_yaw_cmd_send; // 传递给云台的控制信息
 #endif
 #if (defined(ONE_BOARD) || defined(GIMBAL_BOARD))
 static Vision_Recv_s *vision_recv_data;   // 视觉接收数据指针,初始化时返回
-static Publisher_t *gimbal_cmd_pub;       // 云台控制消息发布者
-static Gimbal_Ctrl_Cmd_s gimbal_cmd_send; // 传递给云台的控制信息
 #endif
 /**
  * @brief 机器人核心控制任务初始化,会被RobotInit()调用
