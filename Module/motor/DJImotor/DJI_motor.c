@@ -364,5 +364,5 @@ static void DJIMotorLostCallback(void *motor_ptr)
     DJIMotor_Instance *motor                 = (DJIMotor_Instance *)motor_ptr;
     motor->stop_flag                         = MOTOR_STOP;
     uint16_t can_bus __attribute__((unused)) = motor->motor_can_instance->can_handle == &hcan1 ? 1 : 2;
-    LEDErrLog(can_bus, LED_COLOR_R);
+    // LEDErrLog(can_bus, LED_COLOR_R);
 }

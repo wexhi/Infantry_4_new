@@ -109,9 +109,9 @@ static void SendProcess(Vision_Send_s *send, uint8_t *tx_buff)
     tx_buff[3] = send->is_shoot;
 
     /* 使用memcpy发送浮点型小数 */
-    memcpy(&tx_buff[4], &send->yaw, 4);
-    memcpy(&tx_buff[8], &send->pitch, 4);
-    memcpy(&tx_buff[12], &send->roll, 4);
+    memcpy(&tx_buff[4], &send->roll, 4);
+    memcpy(&tx_buff[8], &send->yaw, 4);
+    memcpy(&tx_buff[12], &send->pitch, 4);
 
     /* 发送校验位 */
     memcpy(&tx_buff[16], &send->checksum, 2);

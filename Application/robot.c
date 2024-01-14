@@ -1,6 +1,5 @@
 #include "robot.h"
 #include "roboTask.h"
-#include "test_motor.h"
 #include "robot_cmd.h"
 #include "chassis.h"
 #include "gimbal.h"
@@ -41,12 +40,7 @@ void RobotTask()
     ChassisTask();
     GimbalTask();
     // 测试代码
-    // TestTask();
+
 }
 
 /*  下面为测试代码,可忽略    */
-
-// static void AAAAA()
-// {
-//     LEDSet(LED_COLOR_B, 255, 255);
-// }
