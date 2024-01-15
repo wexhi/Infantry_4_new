@@ -105,10 +105,6 @@ void RobotCMDTask(void)
     PubPushMessage(gimbal_yaw_cmd_pub, (void *)&gimbal_yaw_cmd_send);
 #endif
 #ifdef CHASSIS_BOARD
-    // test
-    down_send_data.gimbal_cmd.pitch += 1.0f;
-    down_send_data.gimbal_cmd.yaw += 0.01f;
-    down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_FREE_MODE;
     CANCommSend(cmd_can_comm, (void *)&down_send_data);
 #endif
 }
