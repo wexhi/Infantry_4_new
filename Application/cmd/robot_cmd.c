@@ -122,9 +122,15 @@ static void RemoteControlSet(void)
     } else if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
         chassis_cmd_send.chassis_mode   = CHASSIS_NO_FOLLOW;
         gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
+#ifdef CHASSIS_BOARD
+        down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_FREE_MODE; //! CHASSIS_BOARD Pitch云台自由模式
+#endif
     } else if (switch_is_down(rc_data[TEMP].rc.switch_right)) {
         chassis_cmd_send.chassis_mode   = CHASSIS_ZERO_FORCE;
         gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_ZERO_FORCE;
+#ifdef CHASSIS_BOARD
+        down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_ZERO_FORCE; //! CHASSIS_BOARD Pitch云台电流零输入
+#endif
     }
 
     chassis_cmd_send.vx = 10.0f * (float)rc_data[TEMP].rc.rocker_l_; // _水平方向
@@ -134,5 +140,8 @@ static void RemoteControlSet(void)
     // 云台参数
     // 按照摇杆的输出大小进行角度增量,增益系数需调整
     gimbal_yaw_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_r_;
+#ifdef CHASSIS_BOARD
+    down_send_data.gimbal_cmd.pitch += 0.001f * (float)rc_data[TEMP].rc.rocker_r1; //! CHASSIS_BOARD Pitch轴角度增量
+#endif
 }
 #endif
