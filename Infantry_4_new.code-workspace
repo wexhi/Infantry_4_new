@@ -29,7 +29,7 @@
         },
         "cortex-debug.armToolchainPath": "C:\\PROGRAM FILES (X86)\\GNU TOOLS ARM EMBEDDED\\4.9 2015Q3\\BIN",
         "cortex-debug.openocdPath": "C:\\USERS\\WEXHI\\.EIDE\\TOOLS\\OPENOCD_7A1ADFBEC_MINGW32\\BIN\\OPENOCD.EXE",
-        "cortex-debug.variableUseNaturalFormat": false
+        "cortex-debug.variableUseNaturalFormat": true
     },
     "extensions": {
         "recommendations": [

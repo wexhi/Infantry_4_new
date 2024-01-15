@@ -22,12 +22,13 @@
 #ifdef CHASSIS_BOARD // 对双板的兼容,条件编译
 // 初始化底盘控制消息发布者
 #include "C_comm.h"
-static CAN_Comm_Instance *cmd_can_comm; // 双板通信
+static CAN_Comm_Instance *cmd_can_comm;  // 双板通信
+static Down_To_Up_Data_s down_send_data; // 下板发送给上板的数据
+static Up_To_Down_Data_s down_recv_data; // 下板收到的上板数据
 #endif
 
-
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
-static void RemoteControlSet(void); // 遥控器控制量设置
+static void RemoteControlSet(void);           // 遥控器控制量设置
 static RC_ctrl_t *rc_data;                    // 遥控器数据指针,初始化时返回
 static Publisher_t *chassis_cmd_pub;          // 底盘控制消息发布者
 static Chassis_Ctrl_Cmd_s chassis_cmd_send;   // 传递给底盘的控制信息
@@ -82,8 +83,8 @@ void RobotCMDInit(void)
             .tx_id      = 0x312,
             .rx_id      = 0x311,
         },
-        .recv_data_len = 0,
-        .send_data_len = sizeof(Gimbal_Ctrl_Cmd_s),
+        .recv_data_len = sizeof(Up_To_Down_Data_s),
+        .send_data_len = sizeof(Down_To_Up_Data_s),
     };
     cmd_can_comm = CANCommInit(&comm_conf);
 #endif
@@ -92,6 +93,10 @@ void RobotCMDInit(void)
 /* 机器人核心控制任务,200Hz频率运行(必须高于视觉发送频率) */
 void RobotCMDTask(void)
 {
+#ifdef CHASSIS_BOARD
+    // test
+    down_recv_data = *(Up_To_Down_Data_s *)CANCommGet(cmd_can_comm);
+#endif
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
     RemoteControlSet(); // 遥控器控制量设置
 
@@ -101,10 +106,10 @@ void RobotCMDTask(void)
 #endif
 #ifdef CHASSIS_BOARD
     // test
-    gimbal_yaw_cmd_send.yaw+=0.01f;
-    gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_GYRO_MODE;
-    gimbal_yaw_cmd_send.pitch-=0.1f;
-    CANCommSend(cmd_can_comm, (void *)&gimbal_yaw_cmd_send);
+    down_send_data.gimbal_cmd.pitch += 1.0f;
+    down_send_data.gimbal_cmd.yaw += 0.01f;
+    down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_FREE_MODE;
+    CANCommSend(cmd_can_comm, (void *)&down_send_data);
 #endif
 }
 

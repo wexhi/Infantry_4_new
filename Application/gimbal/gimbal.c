@@ -14,9 +14,12 @@ static DJIMotor_Instance *pitch_motor;
 #endif
 
 #ifdef GIMBAL_BOARD
+#include "ins_task.h"
 #include "C_comm.h"
+static Up_To_Down_Data_s up_send_data; // 上板发送给下板的数据
+static Down_To_Up_Data_s up_recv_data; // 上板收到的下板数据
+static attitude_t *gimba_IMU_data; // 云台IMU数据
 static CAN_Comm_Instance *gimbal_can_comm;
-static Gimbal_Ctrl_Cmd_s gimbal_pitch_cmd_recv;
 #endif //! Only GIMBAL_BOARD ! Only
 
 void GimbalInit(void)
@@ -25,11 +28,11 @@ void GimbalInit(void)
     Motor_Init_Config_s pitch_config = {
         .can_init_config = {
             .can_handle = &hcan1,
-            .tx_id      = 3,
+            .tx_id      = 5,
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp            = 15,
+                .Kp            = 1,
                 .Ki            = 0,
                 .Kd            = 0,
                 .IntegralLimit = 100,
@@ -37,7 +40,7 @@ void GimbalInit(void)
                 .MaxOut        = 500,
             },
             .speed_PID = {
-                .Kp            = 20,
+                .Kp            = 10,
                 .Ki            = 1,
                 .Kd            = 0,
                 .IntegralLimit = 3000,
@@ -59,14 +62,15 @@ void GimbalInit(void)
 #endif
 
 #ifdef GIMBAL_BOARD
+    gimba_IMU_data                   = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
     CAN_Comm_Init_Config_s comm_conf = {
         .can_config = {
             .can_handle = &hcan2,
             .tx_id      = 0x311,
             .rx_id      = 0x312,
         },
-        .recv_data_len = sizeof(Gimbal_Ctrl_Cmd_s),
-        .send_data_len = 0,
+        .recv_data_len = sizeof(Down_To_Up_Data_s),
+        .send_data_len = sizeof(Up_To_Down_Data_s),
     };
     gimbal_can_comm = CANCommInit(&comm_conf);
 #endif // GIMBAL_BOARD
@@ -114,12 +118,20 @@ void GimbalInit(void)
 void GimbalTask(void)
 {
 #ifdef GIMBAL_BOARD
-    gimbal_pitch_cmd_recv = *(Gimbal_Ctrl_Cmd_s *)CANCommGet(gimbal_can_comm);
+    up_recv_data = *(Down_To_Up_Data_s *)CANCommGet(gimbal_can_comm);
+    
+    switch(up_recv_data.gimbal_cmd.gimbal_mode) {
+        case GIMBAL_ZERO_FORCE:
+            DJIMotorStop(pitch_motor);
+            break;
+        case GIMBAL_FREE_MODE:
+            DJIMotorEnable(pitch_motor);
+            DJIMotorSetRef(pitch_motor, up_recv_data.gimbal_cmd.pitch);
+            break;
+        default:
+            break;
+    }
 #endif // GIMBAL_BOARD
-
-#ifdef CHASSIS_BOARD
-
-#endif // CHASSIS_BOARD
 
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
     SubGetMessage(gimbal_yaw_sub, &gimbal_yaw_cmd_recv);
@@ -138,4 +150,9 @@ void GimbalTask(void)
             break;
     }
 #endif
+
+#ifdef GIMBAL_BOARD
+    up_send_data.yaw = gimba_IMU_data->Yaw;
+    CANCommSend(gimbal_can_comm, (void *)&up_send_data);
+#endif // GIMBAL_BOARD
 }
