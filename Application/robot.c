@@ -1,9 +1,8 @@
 #include "robot.h"
 #include "roboTask.h"
 #include "robot_def.h"
-
-#if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
 #include "robot_cmd.h"
+#if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
 #include "chassis.h"
 #endif
 
@@ -34,14 +33,15 @@ void RobotInit(void)
     // BSP初始化
     BSPInit();
     // 应用层初始化
+    RobotCMDInit();
 #if defined(ONE_BOARD) || defined(GIMBAL_BOARD)
     // 发射机构初始化
 #endif
 
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
-    RobotCMDInit();
     ChassisInit(); // 底盘初始化
 #endif
+    
     GimbalInit(); // 云台初始化，因为云台上板控制的是Pitch轴，但是云台下板控制的是Yaw轴，因此云台初始化任务必须执行
 
     // rtos创建任务
@@ -58,13 +58,14 @@ void RobotTask()
 {
     // 应用层任务
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
-    RobotCMDTask();
+    // 底盘任务
     ChassisTask();
 #endif
 
 #if defined(ONE_BOARD) || defined(GIMBAL_BOARD)
     // 发射机构任务
 #endif
+    RobotCMDTask();
     GimbalTask();
     // 测试代码
 }

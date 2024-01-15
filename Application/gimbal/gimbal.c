@@ -13,6 +13,11 @@ static Gimbal_Ctrl_Cmd_s gimbal_yaw_cmd_recv; // 来自cmd的控制信息
 static DJIMotor_Instance *pitch_motor;
 #endif
 
+#ifdef GIMBAL_BOARD
+#include "C_comm.h"
+static CAN_Comm_Instance *gimbal_can_comm;
+static Gimbal_Ctrl_Cmd_s gimbal_pitch_cmd_recv;
+#endif //! Only GIMBAL_BOARD ! Only
 
 void GimbalInit(void)
 {
@@ -52,6 +57,19 @@ void GimbalInit(void)
 
     pitch_motor = DJIMotorInit(&pitch_config);
 #endif
+
+#ifdef GIMBAL_BOARD
+    CAN_Comm_Init_Config_s comm_conf = {
+        .can_config = {
+            .can_handle = &hcan2,
+            .tx_id      = 0x311,
+            .rx_id      = 0x312,
+        },
+        .recv_data_len = sizeof(Gimbal_Ctrl_Cmd_s),
+        .send_data_len = 0,
+    };
+    gimbal_can_comm = CANCommInit(&comm_conf);
+#endif // GIMBAL_BOARD
 
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
     Motor_Init_Config_s yaw_config = {
@@ -95,6 +113,14 @@ void GimbalInit(void)
 
 void GimbalTask(void)
 {
+#ifdef GIMBAL_BOARD
+    gimbal_pitch_cmd_recv = *(Gimbal_Ctrl_Cmd_s *)CANCommGet(gimbal_can_comm);
+#endif // GIMBAL_BOARD
+
+#ifdef CHASSIS_BOARD
+
+#endif // CHASSIS_BOARD
+
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
     SubGetMessage(gimbal_yaw_sub, &gimbal_yaw_cmd_recv);
 
