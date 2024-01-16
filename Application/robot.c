@@ -10,7 +10,7 @@
 // #include "shoot.h"
 #endif
 
-#include "gimbal.h"
+// #include "gimbal.h"
 
 #include "bsp_init.h"
 
@@ -42,7 +42,7 @@ void RobotInit(void)
     ChassisInit(); // 底盘初始化
 #endif
     
-    GimbalInit(); // 云台初始化，因为云台上板控制的是Pitch轴，但是云台下板控制的是Yaw轴，因此云台初始化任务必须执行
+    // GimbalInit(); // 云台初始化，因为云台上板控制的是Pitch轴，但是云台下板控制的是Yaw轴，因此云台初始化任务必须执行
 
     // rtos创建任务
     OSTaskInit();
@@ -66,7 +66,7 @@ void RobotTask()
     // 发射机构任务
 #endif
     RobotCMDTask();
-    GimbalTask();
+    // GimbalTask();
     // 测试代码
 }
 
