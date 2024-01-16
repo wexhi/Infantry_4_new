@@ -69,7 +69,7 @@ void RobotCMDInit(void)
         },
         .usart_config = {
             .recv_buff_size = VISION_RECV_SIZE,
-            .usart_handle   = &huart1,
+            .usart_handle   = &huart6,
         },
 
     };

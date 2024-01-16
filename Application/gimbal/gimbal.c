@@ -10,21 +10,23 @@ static Gimbal_Ctrl_Cmd_s gimbal_yaw_cmd_recv; // 来自cmd的控制信息
 #endif
 
 #if defined(GIMBAL_BOARD) || defined(ONE_BOARD)
+#include "ins_task.h"
 static DJIMotor_Instance *pitch_motor;
+static attitude_t *gimba_IMU_data; // 云台IMU数据指针
 #endif
 
 #ifdef GIMBAL_BOARD
-#include "ins_task.h"
 #include "C_comm.h"
 static Up_To_Down_Data_s up_send_data; // 上板发送给下板的数据
 static Down_To_Up_Data_s up_recv_data; // 上板收到的下板数据
-static attitude_t *gimba_IMU_data; // 云台IMU数据
 static CAN_Comm_Instance *gimbal_can_comm;
 #endif //! Only GIMBAL_BOARD ! Only
 
 void GimbalInit(void)
 {
 #if defined(GIMBAL_BOARD) || defined(ONE_BOARD)
+    gimba_IMU_data = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
+
     Motor_Init_Config_s pitch_config = {
         .can_init_config = {
             .can_handle = &hcan1,
@@ -47,6 +49,8 @@ void GimbalInit(void)
                 .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
                 .MaxOut        = 20000,
             },
+            .other_angle_feedback_ptr = &gimba_IMU_data->Pitch, // 云台pitch轴使用IMU数据
+            .other_speed_feedback_ptr = &gimba_IMU_data->Gyro[0],
         },
         .controller_setting_init_config = {
             .angle_feedback_source = MOTOR_FEED,
@@ -62,7 +66,6 @@ void GimbalInit(void)
 #endif
 
 #ifdef GIMBAL_BOARD
-    gimba_IMU_data                   = INS_Init(); // IMU先初始化,获取姿态数据指针赋给yaw电机的其他数据来源
     CAN_Comm_Init_Config_s comm_conf = {
         .can_config = {
             .can_handle = &hcan2,
@@ -119,8 +122,8 @@ void GimbalTask(void)
 {
 #ifdef GIMBAL_BOARD
     up_recv_data = *(Down_To_Up_Data_s *)CANCommGet(gimbal_can_comm);
-    
-    switch(up_recv_data.gimbal_cmd.gimbal_mode) {
+
+    switch (up_recv_data.gimbal_cmd.gimbal_mode) {
         case GIMBAL_ZERO_FORCE:
             DJIMotorStop(pitch_motor);
             break;
