@@ -15,9 +15,9 @@
 #include "stdint.h"
 
 /* 开发板类型定义,烧录时注意不要弄错对应功能;修改定义后需要重新编译,只能存在一个定义! */
-// #define ONE_BOARD // 单板控制整车
-#define CHASSIS_BOARD // 底盘板，注意底盘板还控制了云台的YAW轴
-// #define GIMBAL_BOARD // 云台板
+// #define ONE_BOARD // ! 单板控制整车，beta选项，建议别选上
+// #define CHASSIS_BOARD // 底盘板，注意底盘板还控制了云台的YAW轴
+#define GIMBAL_BOARD // 云台板
 
 /* 机器人重要参数定义,注意根据不同机器人进行修改,浮点数需要以.0或f结尾,无符号以u结尾 */
 // 底盘参数
@@ -108,11 +108,12 @@ typedef struct
 {
     float yaw;
     float up_yaw;
+    float up_speed;
 
     gimbal_mode_e gimbal_mode;
 } Gimbal_Ctrl_Yaw_Cmd_s;
 
-typedef struct 
+typedef struct
 {
     float pitch;
 
@@ -123,7 +124,8 @@ typedef struct
 typedef struct
 {
     Gimbal_Ctrl_Yaw_Cmd_s gimbal_cmd; // 视觉反馈的云台控制命令
-    float yaw;                    // 云台yaw角度
+    float yaw;                        // 云台yaw角度
+    float speed;                      // 云台yaw轴速度
 } Up_To_Down_Data_s;
 
 // 下C -> 上C

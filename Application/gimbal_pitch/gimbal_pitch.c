@@ -24,7 +24,7 @@ void GimbalPitchInit(void)
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp            = 1,
+                .Kp            = 10,
                 .Ki            = 0,
                 .Kd            = 0,
                 .IntegralLimit = 100,
@@ -43,11 +43,11 @@ void GimbalPitchInit(void)
             .other_speed_feedback_ptr = &gimba_IMU_data->Gyro[0],
         },
         .controller_setting_init_config = {
-            .angle_feedback_source = MOTOR_FEED,
-            .speed_feedback_source = MOTOR_FEED,
+            .angle_feedback_source = OTHER_FEED,
+            .speed_feedback_source = OTHER_FEED,
             .outer_loop_type       = ANGLE_LOOP,
             .close_loop_type       = SPEED_LOOP | ANGLE_LOOP,
-            .motor_reverse_flag    = MOTOR_DIRECTION_REVERSE,
+            .motor_reverse_flag    = MOTOR_DIRECTION_NORMAL,
         },
         .motor_type = GM6020,
     };

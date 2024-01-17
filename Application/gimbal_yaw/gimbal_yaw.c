@@ -60,5 +60,6 @@ void GimbalYawTask(void)
     // 获取云台控制数据
     SubGetMessage(gimbal_yaw_sub, &gimbal_yaw_cmd_recv);
     DJIMotorChangeFeed(yaw_motor,ANGLE_LOOP,OTHER_FEED,&gimbal_yaw_cmd_recv.up_yaw);
+    DJIMotorChangeFeed(yaw_motor,SPEED_LOOP,OTHER_FEED,&gimbal_yaw_cmd_recv.up_speed);
     DJIMotorSetRef(yaw_motor, gimbal_yaw_cmd_recv.yaw);
 }

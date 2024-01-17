@@ -123,6 +123,7 @@ void RobotCMDTask(void)
 #ifdef CHASSIS_BOARD
     down_recv_data             = *(Up_To_Down_Data_s *)CANCommGet(down2up_can_comm);
     gimbal_yaw_cmd_send.up_yaw = down_recv_data.yaw;
+    gimbal_yaw_cmd_send.up_speed = down_recv_data.speed;
 #endif
 #ifdef GIMBAL_BOARD
     up_recv_data                      = *(Down_To_Up_Data_s *)CANCommGet(up2down_can_comm);
@@ -130,6 +131,7 @@ void RobotCMDTask(void)
     gimbal_pitch_cmd_send.pitch       = up_recv_data.gimbal_cmd.pitch;
 
     up_send_data.yaw = gimbal_IMU_data->Yaw;
+    up_send_data.speed = gimbal_IMU_data->Gyro[2];
 #endif // GIMBAL_BOARD
 
 #if defined(ONE_BOARD) || defined(CHASSIS_BOARD)
