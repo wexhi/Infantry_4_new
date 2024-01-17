@@ -95,9 +95,9 @@ void DJIMotorStop(DJIMotor_Instance *motor);
  * @param motor 要切换反馈数据来源的电机
  * @param loop  要切换反馈数据来源的控制闭环
  * @param type  目标反馈模式
+ * @param ptr   目标反馈数据指针
  */
-void DJIMotorChangeFeed(DJIMotor_Instance *motor, Closeloop_Type_e loop, Feedback_Source_e type);
-
+void DJIMotorChangeFeed(DJIMotor_Instance *motor, Closeloop_Type_e loop, Feedback_Source_e type, float *ptr);
 /**
  * @brief 修改电机闭环目标(外层闭环)
  *

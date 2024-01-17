@@ -127,14 +127,17 @@ void DJIMotorStop(DJIMotor_Instance *motor)
  * @param motor 要切换反馈数据来源的电机
  * @param loop  要切换反馈数据来源的控制闭环
  * @param type  目标反馈模式
+ * @param ptr   目标反馈数据指针
  */
-void DJIMotorChangeFeed(DJIMotor_Instance *motor, Closeloop_Type_e loop, Feedback_Source_e type)
+void DJIMotorChangeFeed(DJIMotor_Instance *motor, Closeloop_Type_e loop, Feedback_Source_e type, float *ptr)
 {
-    if (loop == ANGLE_LOOP)
-        motor->motor_settings.angle_feedback_source = type;
-    else if (loop == SPEED_LOOP)
-        motor->motor_settings.speed_feedback_source = type;
-    else
+    if (loop == ANGLE_LOOP) {
+        motor->motor_settings.angle_feedback_source      = type;
+        motor->motor_controller.other_angle_feedback_ptr = ptr;
+    } else if (loop == SPEED_LOOP) {
+        motor->motor_settings.speed_feedback_source      = type;
+        motor->motor_controller.other_speed_feedback_ptr = ptr;
+    } else
         return; // 检查是否传入了正确的LOOP类型,或发生了指针越界
 }
 

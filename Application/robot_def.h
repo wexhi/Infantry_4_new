@@ -15,8 +15,8 @@
 #include "stdint.h"
 
 /* 开发板类型定义,烧录时注意不要弄错对应功能;修改定义后需要重新编译,只能存在一个定义! */
-#define ONE_BOARD // 单板控制整车
-// #define CHASSIS_BOARD // 底盘板，注意底盘板还控制了云台的YAW轴
+// #define ONE_BOARD // 单板控制整车
+#define CHASSIS_BOARD // 底盘板，注意底盘板还控制了云台的YAW轴
 // #define GIMBAL_BOARD // 云台板
 
 /* 机器人重要参数定义,注意根据不同机器人进行修改,浮点数需要以.0或f结尾,无符号以u结尾 */
@@ -103,7 +103,6 @@ typedef struct
     gimbal_mode_e gimbal_mode;
 } Gimbal_Ctrl_Cmd_s;
 
-#ifdef CHASSIS_BOARD
 // 双板时，下板cmd发布控制云台控制数据，由gimbal订阅
 typedef struct
 {
@@ -112,19 +111,25 @@ typedef struct
 
     gimbal_mode_e gimbal_mode;
 } Gimbal_Ctrl_Yaw_Cmd_s;
-#endif // CHASSIS_BOARD
+
+typedef struct 
+{
+    float pitch;
+
+    gimbal_mode_e gimbal_mode;
+} Gimbal_Ctrl_Pitch_Cmd_s;
 
 // 上C -> 下C
 typedef struct
 {
-    Gimbal_Ctrl_Cmd_s gimbal_cmd; // 视觉反馈的云台控制命令
+    Gimbal_Ctrl_Yaw_Cmd_s gimbal_cmd; // 视觉反馈的云台控制命令
     float yaw;                    // 云台yaw角度
 } Up_To_Down_Data_s;
 
 // 下C -> 上C
 typedef struct
 {
-    Gimbal_Ctrl_Cmd_s gimbal_cmd; // 底盘反馈的云台控制命令，用于控制Pitch轴
+    Gimbal_Ctrl_Pitch_Cmd_s gimbal_cmd; // 底盘反馈的云台控制命令，用于控制Pitch轴
     // 发射任务命令
 } Down_To_Up_Data_s;
 
