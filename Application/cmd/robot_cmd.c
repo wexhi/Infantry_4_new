@@ -124,8 +124,8 @@ void RobotCMDTask(void)
     down_recv_data             = *(Up_To_Down_Data_s *)CANCommGet(down2up_can_comm);
     gimbal_yaw_cmd_send.up_yaw = down_recv_data.yaw;
     if (!gimbal_yaw_cmd_send.is_init) {
-        gimbal_yaw_cmd_send.yaw      = -down_recv_data.yaw;
-        gimbal_yaw_cmd_send.is_init  = 1;
+        gimbal_yaw_cmd_send.yaw     = -down_recv_data.yaw;
+        gimbal_yaw_cmd_send.is_init = 1;
     }
     gimbal_yaw_cmd_send.up_speed = down_recv_data.speed;
 #endif
@@ -163,7 +163,7 @@ static void RemoteControlSet(void)
 {
     // 底盘参数,目前没有加入小陀螺(调试似乎暂时没有必要),系数需要调整
     if (switch_is_up(rc_data[TEMP].rc.switch_right)) {
-        gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
+        // gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
 #ifdef CHASSIS_BOARD
         down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_FREE_MODE; //! CHASSIS_BOARD Pitch云台自由模式
 #endif
@@ -176,6 +176,7 @@ static void RemoteControlSet(void)
     } else if (switch_is_down(rc_data[TEMP].rc.switch_right)) {
         chassis_cmd_send.chassis_mode   = CHASSIS_ZERO_FORCE;
         gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_ZERO_FORCE;
+        gimbal_yaw_cmd_send.is_init     = 0;
 #ifdef CHASSIS_BOARD
         down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_ZERO_FORCE; //! CHASSIS_BOARD Pitch云台电流零输入
 #endif
@@ -187,7 +188,7 @@ static void RemoteControlSet(void)
 
     // 云台参数
     // 按照摇杆的输出大小进行角度增量,增益系数需调整
-    gimbal_yaw_cmd_send.yaw += 0.002f * (float)rc_data[TEMP].rc.rocker_r_;
+    gimbal_yaw_cmd_send.yaw += 0.0015f * (float)rc_data[TEMP].rc.rocker_r_;
 #ifdef CHASSIS_BOARD
     down_send_data.gimbal_cmd.pitch += 0.001f * (float)rc_data[TEMP].rc.rocker_r1; //! CHASSIS_BOARD Pitch轴角度增量
 #endif

@@ -21,20 +21,21 @@ void GimbalYawInit(void)
         },
         .controller_param_init_config = {
             .angle_PID = {
-                .Kp            = 15, // 15
+                .Kp            = 20, // 8
                 .Ki            = 0,
                 .Kd            = 0,
-                .DeadBand      = 0.1f,
-                .IntegralLimit = 100,
+                .DeadBand      = 4,
                 .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
-                .MaxOut        = 500,
+                .IntegralLimit = 100,
+
+                .MaxOut = 360,
             },
             .speed_PID = {
-                .Kp            = 30, // 20
-                .Ki            = 1,  // 1
+                .Kp            = 25,  // 50
+                .Ki            = 0, // 200
                 .Kd            = 0,
-                .IntegralLimit = 3000,
                 .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
+                .IntegralLimit = 3000,
                 .MaxOut        = 20000,
             },
         },
@@ -70,12 +71,13 @@ void GimbalYawTask(void)
             DJIMotorEnable(yaw_motor);
             DJIMotorChangeFeed(yaw_motor, ANGLE_LOOP, MOTOR_FEED, NULL);
             DJIMotorChangeFeed(yaw_motor, SPEED_LOOP, MOTOR_FEED, NULL);
+            DJIMotorOuterLoop(yaw_motor, SPEED_LOOP);
             DJIMotorSetRef(yaw_motor, gimbal_yaw_cmd_recv.yaw); // yaw和pitch会在robot_cmd中处理好多圈和单圈
             break;
         case GIMBAL_GYRO_MODE:
             DJIMotorEnable(yaw_motor);
             DJIMotorChangeFeed(yaw_motor, ANGLE_LOOP, OTHER_FEED, &gimbal_yaw_cmd_recv.up_yaw);
-            DJIMotorChangeFeed(yaw_motor, SPEED_LOOP, OTHER_FEED, &gimbal_yaw_cmd_recv.up_speed);
+            // DJIMotorChangeFeed(yaw_motor, SPEED_LOOP, OTHER_FEED, &gimbal_yaw_cmd_recv.up_speed);
             DJIMotorSetRef(yaw_motor, gimbal_yaw_cmd_recv.yaw);
     }
 }
