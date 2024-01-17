@@ -94,7 +94,9 @@
           "Module",
           "Bsp",
           "Application",
-          "Bsp/GPIO"
+          "Bsp/GPIO",
+          "Application/gimbal_pitch",
+          "Application/gimbal_yaw"
         ],
         "libList": [],
         "sourceDirList": [],

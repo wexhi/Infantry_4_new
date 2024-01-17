@@ -123,6 +123,10 @@ void RobotCMDTask(void)
 #ifdef CHASSIS_BOARD
     down_recv_data             = *(Up_To_Down_Data_s *)CANCommGet(down2up_can_comm);
     gimbal_yaw_cmd_send.up_yaw = down_recv_data.yaw;
+    if (!gimbal_yaw_cmd_send.is_init) {
+        gimbal_yaw_cmd_send.yaw      = down_recv_data.yaw;
+        gimbal_yaw_cmd_send.is_init  = 1;
+    }
     gimbal_yaw_cmd_send.up_speed = down_recv_data.speed;
 #endif
 #ifdef GIMBAL_BOARD
@@ -130,7 +134,7 @@ void RobotCMDTask(void)
     gimbal_pitch_cmd_send.gimbal_mode = up_recv_data.gimbal_cmd.gimbal_mode;
     gimbal_pitch_cmd_send.pitch       = up_recv_data.gimbal_cmd.pitch;
 
-    up_send_data.yaw = gimbal_IMU_data->Yaw;
+    up_send_data.yaw   = gimbal_IMU_data->YawTotalAngle;
     up_send_data.speed = gimbal_IMU_data->Gyro[2];
 #endif // GIMBAL_BOARD
 
@@ -159,12 +163,15 @@ static void RemoteControlSet(void)
 {
     // 底盘参数,目前没有加入小陀螺(调试似乎暂时没有必要),系数需要调整
     if (switch_is_up(rc_data[TEMP].rc.switch_right)) {
-
-    } else if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
-        chassis_cmd_send.chassis_mode   = CHASSIS_NO_FOLLOW;
         gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_FREE_MODE;
 #ifdef CHASSIS_BOARD
         down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_FREE_MODE; //! CHASSIS_BOARD Pitch云台自由模式
+#endif
+    } else if (switch_is_mid(rc_data[TEMP].rc.switch_right)) {
+        chassis_cmd_send.chassis_mode   = CHASSIS_NO_FOLLOW;
+        gimbal_yaw_cmd_send.gimbal_mode = GIMBAL_GYRO_MODE;
+#ifdef CHASSIS_BOARD
+        down_send_data.gimbal_cmd.gimbal_mode = GIMBAL_GYRO_MODE; //! CHASSIS_BOARD Pitch云台自由模式
 #endif
     } else if (switch_is_down(rc_data[TEMP].rc.switch_right)) {
         chassis_cmd_send.chassis_mode   = CHASSIS_ZERO_FORCE;

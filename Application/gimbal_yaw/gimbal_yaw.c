@@ -17,19 +17,20 @@ void GimbalYawInit(void)
     Motor_Init_Config_s yaw_config = {
         .can_init_config = {
             .can_handle = &hcan1,
-            .tx_id      = 5,
+            .tx_id      = 3,
         },
         .controller_param_init_config = {
             .angle_PID = {
                 .Kp            = 15, // 15
                 .Ki            = 0,
                 .Kd            = 0,
+                .DeadBand      = 0.1f,
                 .IntegralLimit = 100,
                 .Improve       = PID_Trapezoid_Intergral | PID_Integral_Limit | PID_Derivative_On_Measurement,
                 .MaxOut        = 500,
             },
             .speed_PID = {
-                .Kp            = 10, // 20
+                .Kp            = 30, // 20
                 .Ki            = 1,  // 1
                 .Kd            = 0,
                 .IntegralLimit = 3000,
@@ -59,7 +60,22 @@ void GimbalYawTask(void)
 {
     // 获取云台控制数据
     SubGetMessage(gimbal_yaw_sub, &gimbal_yaw_cmd_recv);
-    DJIMotorChangeFeed(yaw_motor,ANGLE_LOOP,OTHER_FEED,&gimbal_yaw_cmd_recv.up_yaw);
-    DJIMotorChangeFeed(yaw_motor,SPEED_LOOP,OTHER_FEED,&gimbal_yaw_cmd_recv.up_speed);
-    DJIMotorSetRef(yaw_motor, gimbal_yaw_cmd_recv.yaw);
+
+    switch (gimbal_yaw_cmd_recv.gimbal_mode) {
+        case GIMBAL_ZERO_FORCE:
+            DJIMotorStop(yaw_motor);
+            break;
+        // 云台自由模式, 使用编码器反馈, 底盘和云台分离, 仅云台旋转, 一般用于调整云台姿态(英雄吊射等) / 能量机关
+        case GIMBAL_FREE_MODE:
+            DJIMotorEnable(yaw_motor);
+            DJIMotorChangeFeed(yaw_motor, ANGLE_LOOP, MOTOR_FEED, NULL);
+            DJIMotorChangeFeed(yaw_motor, SPEED_LOOP, MOTOR_FEED, NULL);
+            DJIMotorSetRef(yaw_motor, gimbal_yaw_cmd_recv.yaw); // yaw和pitch会在robot_cmd中处理好多圈和单圈
+            break;
+        case GIMBAL_GYRO_MODE:
+            DJIMotorEnable(yaw_motor);
+            DJIMotorChangeFeed(yaw_motor, ANGLE_LOOP, OTHER_FEED, &gimbal_yaw_cmd_recv.up_yaw);
+            DJIMotorChangeFeed(yaw_motor, SPEED_LOOP, OTHER_FEED, &gimbal_yaw_cmd_recv.up_speed);
+            DJIMotorSetRef(yaw_motor, gimbal_yaw_cmd_recv.yaw);
+    }
 }
