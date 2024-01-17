@@ -124,7 +124,7 @@ void RobotCMDTask(void)
     down_recv_data             = *(Up_To_Down_Data_s *)CANCommGet(down2up_can_comm);
     gimbal_yaw_cmd_send.up_yaw = down_recv_data.yaw;
     if (!gimbal_yaw_cmd_send.is_init) {
-        gimbal_yaw_cmd_send.yaw      = down_recv_data.yaw;
+        gimbal_yaw_cmd_send.yaw      = -down_recv_data.yaw;
         gimbal_yaw_cmd_send.is_init  = 1;
     }
     gimbal_yaw_cmd_send.up_speed = down_recv_data.speed;
