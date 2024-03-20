@@ -184,7 +184,7 @@ static void RemoteControlSet(void)
 
     chassis_cmd_send.vx = -10.0f * (float)rc_data[TEMP].rc.rocker_l_; // _水平方向
     chassis_cmd_send.vy = 10.0f * (float)rc_data[TEMP].rc.rocker_l1; // 1数值方向
-    chassis_cmd_send.wz = 10.0f * (float)rc_data[TEMP].rc.rocker_r_;      // _水平方向
+    chassis_cmd_send.wz = -10.0f * (float)rc_data[TEMP].rc.rocker_r_;      // _水平方向
 
     // 云台参数
     // 按照摇杆的输出大小进行角度增量,增益系数需调整
