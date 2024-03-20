@@ -98,7 +98,9 @@
           "Application/gimbal_pitch",
           "Application/gimbal_yaw"
         ],
-        "libList": [],
+        "libList": [
+          "Middlewares/ST/ARM/DSP/Lib"
+        ],
         "sourceDirList": [],
         "defineList": [
           "USE_HAL_DRIVER",

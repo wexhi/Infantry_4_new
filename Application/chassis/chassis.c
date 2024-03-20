@@ -19,7 +19,7 @@ static float vt_lf, vt_rf, vt_lb, vt_rb; // 底盘速度解算后的临时输出
 #ifdef CHASSIS_MCNAMEE_WHEEL
 #define CHASSIS_WHEEL_OFFSET 1.0f // 机器人底盘轮子修正偏移量
 #elif defined(CHASSIS_OMNI_WHEEL)
-#define CHASSIS_WHEEL_OFFSET 0.7071f // 机器人底盘轮子修正偏移量，根号2/2，即45度，用于修正全向轮的安装位置
+#define CHASSIS_WHEEL_OFFSET 1.0f // 机器人底盘轮子修正偏移量，根号2/2，即45度，用于修正全向轮的安装位置
 #endif                               // CHASSIS_OMNI_WHEEL
 
 static void MecanumCalculate(void);
